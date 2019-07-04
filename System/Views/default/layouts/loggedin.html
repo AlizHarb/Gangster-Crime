@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gangsters Crime</title>
+    <!-- CSS -->
+    <link href="https://fonts.googleapis.com/css?family=Cabin|Homenaje|Monda|Lobster|Cuprum|Pacifico|Arapey|Marcellus SC|Germania One|Electrolize|Oswald|Signika|Abel|Play|Electrolize|Marmelad|Special Elite|Pathway Gothic One|Alike|Kadwa|Domine" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{{ base_url }}public/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ base_url }}public/assets/css/all.css">
+    <link rel="stylesheet" href="{{ base_url }}public/assets/css/reset.min.css">
+    <link rel="stylesheet" href="{{ base_url }}public/assets/css/styles.min.css">
+    <style type="text/css">
+        html, body {
+            background: #000 url("{{ base_url }}public/assets/img/backgrounds/locations/yerevan.png") no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="h-100">
+<header>
+    <div class="logo text-center text-md-left">
+        <span class="title">Gangsters Crime</span>
+        <span class="time d-none d-md-inline-block">01:12</span>
+        <span class="announcement d-none d-md-inline-block">
+            <a href="">Here is the announcement <text></text></a>
+        </span>
+    </div>
+</header>
+<div class="container-fluid h-100">
+    <div class="row no-gutters h-100">
+        <div class="d-none d-lg-block col-lg-2">
+            {% include 'default/layouts/sides/left.html' %}
+        </div>
+        <div class="col-12 col-lg-8">
+            <div class="game-body">
+                <ul class="icon-menu">
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                </ul>
+            </div>
+            {% block body %} {% endblock %}
+        </div>
+        <div class="d-none d-lg-block col-lg-2">
+            {% include 'default/layouts/sides/right.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="{{ base_url }}public/assets/js/jquery-3.3.1.slim.min.js"></script>
+<script src="{{ base_url }}public/assets/js/popper.min.js"></script>
+<script src="{{ base_url }}public/assets/bootstrap/js/bootstrap.min.css"></script>
+</body>
+</html>
