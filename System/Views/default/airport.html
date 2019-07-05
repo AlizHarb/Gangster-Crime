@@ -1,0 +1,49 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<ul class="game-tabs">
+    <li class="tab-item"><a href="" class="tab-link">Airport</a></li>
+    <li class="tab-item"><a href="" class="tab-link">Crew Turf</a></li>
+    <li class="tab-item"><a href="" class="tab-link">Overview</a></li>
+</ul>
+
+<div class="page-img d-none d-md-block">
+    <img src="{{ base_url }}public/assets/img/pages/airport/{{ user.getLocation() | lower }}_header.jpg" class="img-fluid">
+</div>
+<div class="row">
+    <div class="col-12 col-md-10 mr-auto ml-auto">
+        {% if user.getTimer('travel') > time %}
+            <div class="alert alert-danger mt-2">
+                The next available flight departs after <span id="travel"></span>
+            </div>
+        {% endif %}
+        <div class="game-body">
+            <i class="fas fa-suitcase icon-design"></i> <a href="{{ base_url }}smuggling">Need extra cash? Carry smuggled goods every time you travel.</a>
+        </div>
+        <div class="game-body">
+            <div class="game-header">Travel Destination</div>
+            <div class="row">
+                {% for location in locations %}
+                    <div class="col-12 col-md-6">
+                        <form method="post" action="{{ base_url }}airport/fly" class="box-game" style="background-image: url('{{ base_url }}public/assets/img/pages/airport/{{ location.L_name | lower }}_travel.png')">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="text">
+                                        <p class="font-weight-bold">{{ location.L_name }}</p>
+                                        <p>${{ location.L_cost | number_format }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <input type="hidden" name="location" value="{{ location.id }}">
+                                    <input type="hidden" name="token" value="{{ token }}">
+                                    <button class="btn btn-dark btn-sm">Book Flight</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

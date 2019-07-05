@@ -97,7 +97,7 @@ class Database
         return false;
     }
 
-    public function update($table, $id, $fields = array())
+    public function update($table, $where, $fields = array())
     {
         $set 	= '';
         $x		= 1;
@@ -108,7 +108,7 @@ class Database
             }
             $x++;
         }
-        $sql = "UPDATE {$table} SET {$set} WHERE id = {$id}";
+        $sql = "UPDATE {$table} SET {$set} WHERE {$where}";
 
         if (!$this->query($sql, $fields)->error()) {
             return true;

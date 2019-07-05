@@ -143,6 +143,10 @@ header .logo span.announcement{
     background-color: rgba(255,255,255,0.05);
     color: #ffffff;
 }
+.game-body ul.icon-menu li.menu-item.in-active{
+    opacity: 0.3;
+    filter:alpha(opacity=30);
+}
 .game-body ul.icon-menu li.menu-item:hover{
     background-color: #333333;
 }
@@ -155,13 +159,113 @@ header .logo span.announcement{
 }
 .game-body .game-box{
     padding: 5px;
-    background-color: rgba(200,200,200,.1);
+    background-color: rgba(19,19,19,.6);
     margin: 4px 10px 4px 10px;
     border: 1px solid rgba(255,255,255,.2);
     border-radius: 2px;
 }
+.game-body .game-box ul.statics-menu{
+    list-style: none;
+    position: relative;
+}
+.game-body .game-box ul.statics-menu li{
+    width: 100%;
+    font-size: 10px;
+    color: #ffffff;
+}
+.game-body .game-box ul.statics-menu li span.static-name{
+    width: 70%;
+    word-break: break-word;
+}
+.game-body .game-box ul.statics-menu li span.static-num{
+    width: 30%;
+    float: right;
+    word-break: break-word;
+}
+.game-body .box-game{
+    background-repeat: no-repeat;
+    background-position: left;
+    border: 1px solid rgba(255,255,255,.2);
+    background-color: rgba(19,19,19,.6);
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+.game-body .box-game .text{
+    margin-left: 40%;
+    font-size: 10px;
+    color: #ffffff;
+}
+.game-body ul.theft{
+    list-style: none;
+}
+.game-body ul.theft li.theft-item{
+    border: 1px solid transparent;
+}
+.game-body ul.theft li.theft-item button.btn{
+    color: #ffffff;
+    font-size: 11px;
+    padding:0;
+    margin:0;
+    font-family: 'Cabin', sans-serif;
+}
+.game-body ul.theft li.theft-item:hover{
+    background: linear-gradient(to bottom, rgba(120, 20, 21, 0.76), rgba(83, 15, 16, 0.86));
+    border: 1px solid #333333;
+    border-radius: 5px;
+}
+ul.game-tabs{
+    margin: 4px;
+    list-style: none;
+    width: 100%;
+}
+ul.game-tabs li.tab-item{
+    display: inline-block;
+    width: calc(90%/ 6);
+    text-align:center;
+    background: url("../img/backgrounds/background-body.jpg");
+    margin: 4px;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 5px;
+    font-size: 12pt;
+    color: grey;
+    font-family: 'Homenaje', sans-serif
+}
+ul.game-tabs li.tab-item a.tab-link{
+    color: #ffffff;
+}
+ul.game-tabs li.tab-item:hover{
+    background: #333333;
+}
+.page-img{
+    margin-right: auto;
+    margin-left: auto;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+}
+.icon-design{
+    font-size: 19px;
+    margin-right: 7px;
+    color: #ffffff;
+}
+.hover-tr{
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+.hover-tr:hover{
+    background: linear-gradient(to bottom, rgba(120, 20, 21, 0.76), rgba(83, 15, 16, 0.86));
+    border: 1px solid #333333;
+    border-radius: 5px;
+}
 @media all and (max-width: 768px) {
     .game-body ul.icon-menu li.menu-item{
         width: calc(85% /5);
+    }
+    ul.game-tabs li.tab-item{
+        width: calc(90%/ 3);
     }
 }

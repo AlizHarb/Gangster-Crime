@@ -26,7 +26,9 @@ class Validate
 
                 if ($rule === 'required' && empty($value)) {
                     $this->addError("{$input} is required");
-                } else if (!empty($value)) {
+                }elseif ($rule === 'number' && !is_numeric($value)) {
+                    $this->addError("{$input} must be a number");
+                }elseif (!empty($value)) {
                     switch ($rule) {
                         case 'min':
                             if (strlen($value) < $rule_value) {
@@ -36,6 +38,16 @@ class Validate
                         case 'max':
                             if (strlen($value) > $rule_value) {
                                 $this->addError("{$input} must be no longer than {$rule_value} characters");
+                            }
+                            break;
+                        case 'minNumber':
+                            if ($value < $rule_value) {
+                                $this->addError("{$input} must be higher than ".number_format($rule_value));
+                            }
+                            break;
+                        case 'maxNumber':
+                            if ($value > $rule_value) {
+                                $this->addError("{$input} must be less than ".number_format($rule_value));
                             }
                             break;
                         case 'matches':

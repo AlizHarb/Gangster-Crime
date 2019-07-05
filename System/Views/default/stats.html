@@ -1,0 +1,75 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<ul class="game-tabs">
+    <li class="tab-item"><a href="" class="tab-link">Game Statistics</a></li>
+    <li class="tab-item"><a href="" class="tab-link">Casino Statistics</a></li>
+</ul>
+
+<div class="game-body">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="game-header">Game Statistics</div>
+            <div class="game-box">
+                <ul class="statics-menu">
+                    <li>
+                        <span class="static-name">Total Money:</span>
+                        <span class="static-num">000</span>
+                        <ul class="statics-menu ml-2">
+                            <li>
+                                <span class="static-name">Unbanked Money:</span>
+                                <span class="static-num">00</span>
+                            </li>
+                            <li>
+                                <span class="static-name">Banked Money:</span>
+                                <span class="static-num">00</span>
+                            </li>
+                            <li>
+                                <span class="static-name">Bank Vault:</span>
+                                <span class="static-num">00</span>
+                            </li>
+                            <li>
+                                <span class="static-name">Crew Bank:</span>
+                                <span class="static-num">00</span>
+                            </li>
+                            <li>
+                                <span class="static-name">Avg. Money Per User:</span>
+                                <span class="static-num">00</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span class="static-name">Total Bullets:</span>
+                        <span class="static-num">000</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Messages Sent:</span>
+                        <span class="static-num">000</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Forum Posts:</span>
+                        <span class="static-num">000</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Total Gangsters:</span>
+                        <span class="static-num">000</span>
+                        <ul class="statics-menu ml-2">
+                            <li>
+                                <span class="static-name text-success">Alive Gangsters:</span>
+                                <span class="static-num text-success">00</span>
+                            </li>
+                            <li>
+                                <span class="static-name text-danger">Dead Gangsters:</span>
+                                <span class="static-num text-danger">00</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="game-header">Recently Won Casinos</div>
+            <div class="game-box"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

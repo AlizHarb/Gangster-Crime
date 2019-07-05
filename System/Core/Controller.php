@@ -21,11 +21,12 @@ class Controller
 
         $user = $this->model('User');
         if($user->isLoggedIn()){
-            $twig->addGlobal('user', $user->data());
+            $twig->addGlobal('user', $user);
         }
 
         $twig->addGlobal('base_url', Config::get('website/base_url'));
         $twig->addGlobal('token', Token::generate());
+        $twig->addGlobal('time', time());
 
         if(Session::exists('error')){
             $twig->addGlobal('error', Session::flash('error'));

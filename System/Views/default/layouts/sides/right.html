@@ -1,7 +1,7 @@
 <div class="navigation">
     <div class="top">
         <a href=""><span class="fas fa-envelope"></span></a>
-        <a href="">Yerevan</a>
+        <a href="{{ base_url }}airport">{{ user.getLocation() }}</a>
         <form>
             <div class="form-group">
                 <input class="form-control" type="text" name="gangster_name" placeholder="Gangster Name">
@@ -23,7 +23,7 @@
     </ul>
     <ul class="info-menu">
         <li class="menu-header">MONEY</li>
-        <li class="menu-item">0</li>
+        <li class="menu-item">${{ user.stats().GS_cash | number_format}}</li>
     </ul>
     <ul class="info-menu">
         <li class="menu-header">CREDITS</li>
@@ -39,6 +39,6 @@
     </ul>
     <ul class="info-menu">
         <li class="menu-header">CREW</li>
-        <li class="menu-item">Crewsless</li>
+        <li class="menu-item">{{ user.data().crew }}</li>
     </ul>
 </div>

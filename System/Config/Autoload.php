@@ -15,5 +15,5 @@ spl_autoload_register(function($class) {
 });
 
 ini_set('display_errors', 1);
-
-//$db = Database::getInstance();
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);

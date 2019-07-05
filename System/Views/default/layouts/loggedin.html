@@ -8,11 +8,12 @@
     <link href="https://fonts.googleapis.com/css?family=Cabin|Homenaje|Monda|Lobster|Cuprum|Pacifico|Arapey|Marcellus SC|Germania One|Electrolize|Oswald|Signika|Abel|Play|Electrolize|Marmelad|Special Elite|Pathway Gothic One|Alike|Kadwa|Domine" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ base_url }}public/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ base_url }}public/assets/css/all.css">
+    <link rel="stylesheet" href="{{ base_url }}public/assets/css/fontawesome.min.css">
     <link rel="stylesheet" href="{{ base_url }}public/assets/css/reset.min.css">
     <link rel="stylesheet" href="{{ base_url }}public/assets/css/styles.min.css">
     <style type="text/css">
         html, body {
-            background: #000 url("{{ base_url }}public/assets/img/backgrounds/locations/yerevan.png") no-repeat center center fixed;
+            background: #000 url("{{ base_url }}public/assets/img/backgrounds/locations/{{ user.getLocation() | lower }}.png") no-repeat center center fixed;
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -24,7 +25,7 @@
 <header>
     <div class="logo text-center text-md-left">
         <span class="title">Gangsters Crime</span>
-        <span class="time d-none d-md-inline-block">01:12</span>
+        <span class="time d-none d-md-inline-block">{{ "now" | date("g:i") }}</span>
         <span class="announcement d-none d-md-inline-block">
             <a href="">Here is the announcement <text></text></a>
         </span>
@@ -38,18 +39,24 @@
         <div class="col-12 col-lg-8">
             <div class="game-body">
                 <ul class="icon-menu">
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item {% if user.getTimer('travel') > time %} in-active {% endif %}"><a href="{{ base_url }}airport" class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Auto Theft" class="menu-item {% if user.getTimer('autotheft') > time %} in-active {% endif %}"><a href="{{ base_url }}autotheft" class="menu-link"><i class="fas fa-car"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Prison" class="menu-item {% if user.getTimer('prison') > time %} in-active {% endif %}"><a href="{{ base_url }}prison" class="menu-link"><i class="fas fa-tally"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                     <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item"><a class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
                 </ul>
             </div>
+            {% if success %}
+                <div class="alert alert-success">{{ success }}</div>
+            {% endif %}
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
             {% block body %} {% endblock %}
         </div>
         <div class="d-none d-lg-block col-lg-2">
@@ -61,6 +68,22 @@
 <!-- JavaScript -->
 <script src="{{ base_url }}public/assets/js/jquery-3.3.1.slim.min.js"></script>
 <script src="{{ base_url }}public/assets/js/popper.min.js"></script>
-<script src="{{ base_url }}public/assets/bootstrap/js/bootstrap.min.css"></script>
+<script src="{{ base_url }}public/assets/js/jquery.plugin.min.js"></script>
+<script src="{{ base_url }}public/assets/js/jquery.countdown.min.js"></script>
+<script src="{{ base_url }}public/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="{{ base_url }}public/assets/js/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#travel').countdown({until: new Date({{ user.convertTimer('travel') }}), compact: true, format: 'MS', expiryText:'no', alwaysExpire:true});
+        $('#autotheft').countdown({until: new Date({{ user.convertTimer('autotheft') }}), compact: true, format: 'MS', expiryText:'no', alwaysExpire:true});
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        {% for prisoner in prisoners %}
+            $('#jailTime-{{ prisoner.userInfo.data().id }}').countdown({until: new Date({{ prisoner.time }}), compact: true, format: 'HMS', expiryText:'Already out', alwaysExpire:true});
+        {% endfor %}
+    });
+</script>
 </body>
 </html>

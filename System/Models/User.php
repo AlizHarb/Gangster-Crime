@@ -6,6 +6,7 @@ class User
 
     private $_db,
             $_data,
+            $_stats,
             $_sessionName,
             $_isLoggedIn;
 
@@ -34,6 +35,13 @@ class User
         }
     }
 
+    public function set($field)
+    {
+        if(!$this->_db->update("gangstersStats", "id = ".$this->data()->id, $field)){
+            throw new Exception("There was a problem updating the data.");
+        }
+    }
+
     public function find($user = null)
     {
         if ($user) {
@@ -41,11 +49,55 @@ class User
             $data 	= $this->_db->get('gangsters', array($fields, '=', $user));
             if ($data->count()) {
                 $this->_data = $data->first();
+                $stats 	= $this->_db->get('gangstersStats', array("id", '=', $this->data()->id));
+                $this->_stats = $stats->first();
+
+                if($this->stats()->GS_crew == 0){
+                    $this->data()->crew = "Crewless";
+                }else{
+                    $this->data()->crew = "";
+                }
                 $this->data()->name = $this->data()->G_name;
                 return true;
             }
         }
         return false;
+    }
+
+    public function getTimer($name)
+    {
+        $timer = $this->_db->get("gangstersTimer", array('id' ,'=', $this->data()->id));
+        $timer = $timer->results();
+        foreach($timer as $time){
+            if($time->GT_name == $name){
+                return $time->GT_time;
+            }
+        }
+    }
+
+    public function convertTimer($name)
+    {
+        $timer = $this->_db->get("gangstersTimer", array('id' ,'=', $this->data()->id));
+        $timer = $timer->results();
+        foreach($timer as $time){
+            if($time->GT_name == $name){
+                return $time->GT_time * 1000;
+            }
+        }
+    }
+
+    public function setTimer($name, $time)
+    {
+        if($this->getTimer($name) == 0){
+            $this->_db->insert('gangstersTimer', array(
+                "id"        => $this->data()->id,
+                "GT_name"   => $name,
+                "GT_time"   => 0
+            ));
+        }
+        if(!$this->_db->update("gangstersTimer", "id = ".$this->data()->id." AND GT_name = '{$name}'", array("GT_time" => (time() + $time)))){
+            throw new Exception("There was a problem updating the data.");
+        }
     }
 
     public function login($username = null, $password = null)
@@ -64,6 +116,12 @@ class User
         return false;
     }
 
+    public function getLocation()
+    {
+        $location = $this->_db->get("locations", array("id", '=', $this->stats()->GS_location));
+        return $location->first()->L_name;
+    }
+
     public function logout()
     {
         Session::delete($this->_sessionName);
@@ -77,6 +135,11 @@ class User
     public function data()
     {
         return $this->_data;
+    }
+
+    public function stats()
+    {
+        return $this->_stats;
     }
 
     public function isLoggedIn()

@@ -1,0 +1,54 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<div class="game-body">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="game-header">Steal a Vehicle</div>
+            {% if user.getTimer('autotheft') > time %}
+                <div class="game-box" style="background:url({{ base_url }}public/assets/img/pages/autotheft/waiting.jpg) #151515 no-repeat right bottom;min-height: 100px;">
+                    <p>You have <span id="autotheft"></span> seconds remaining until you can attempt to steal another vehicle.</p>
+                </div>
+            {% else %}
+                <div class="game-box">
+                    <ul class="theft">
+                        {% for auto in autotheft %}
+                        <li class="theft-item">
+                            <form method="post" action="{{ base_url }}autotheft/steal">
+                                <input type="hidden" name="theft" value="{{ auto.id }}">
+                                <input type="hidden" name="token" value="{{ token }}">
+                                <button class="btn w-100">
+                                    <span class="float-left">{{ auto.AT_name }}</span>
+                                </button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="game-header">Statistics</div>
+            <div class="game-box">
+                <ul class="statics-menu">
+                    <li>
+                        <span class="static-name">Vehicles Stolen:</span>
+                        <span class="static-num">{{ user.stats().GS_autostolen | number_format }}</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Garage Space:</span>
+                        <span class="static-num">0</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Display Mode:</span>
+                        <span class="static-num">0</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Foreign Car Dealer:</span>
+                        <span class="static-num">0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
