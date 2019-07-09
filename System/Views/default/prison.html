@@ -1,7 +1,7 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/prison/header_prison_{{ user.getLocation() | lower }}.jpg" class="img-fluid">
+    <img src="{{ base_url }}public/assets/img/pages/prison/header_prison_{{ user.getLocation().L_name | lower }}.jpg" class="img-fluid">
 </div>
 <div class="game-body">
     <div class="game-header">Prison</div>
@@ -26,9 +26,9 @@
                     {% endif %}
                     {% for prisoner in prisoners %}
                         <tr class="hover-tr">
-                            <td><a href="{{ base_url }}profile/{{ prisoner.userInfo.data().name }}">{{ prisoner.userInfo.data().name }}</a></td>
+                            <td>{{ prisoner.userInfo.data().profile | raw }}</td>
                             <td>{{ prisoner.userInfo.data().crew }}</td>
-                            <td class="d-none d-md-block">{{ prisoner.userInfo.stats().GS_prisonCrime }}</td>
+                            <td class="d-none d-md-block">{{ prisoner.userInfo.stats().GS_prisonCrime | raw }}</td>
                             <td><span id="jailTime-{{ prisoner.userInfo.data().id }}"></span></td>
                             <td>${{ prisoner.userInfo.stats().GS_prisonReward | number_format }}</td>
                             <td width="10%" class="m-0 p-0">
@@ -66,7 +66,7 @@
                     </li>
                     {% for buster in busters %}
                         <li>
-                            <span class="static-name"><a href="{{ base_url }}profile/{{ buster.userInfo.data().name }}">{{ buster.userInfo.data().name }}</a></span>
+                            <span class="static-name">{{ buster.userInfo.data().profile | raw }}</span>
                             <span class="static-num">{{ buster.bust | number_format }}</span>
                         </li>
                     {% endfor %}

@@ -4,15 +4,16 @@
 class Autotheft extends Controller
 {
 
+    public function __construct()
+    {
+        parent::__construct(true, true, true);
+    }
+
     public function index()
     {
-        $user = $this->model('User');
-        if(!$user->isLoggedIn()){
-            Redirect::to('/');
-        }elseif($user->getTimer('prison') > time()){
-            Redirect::to('/prison');
-        }
-        $theftauto = Database::getInstance()->get("autotheft", array('id', '>', 0));
+        $theftauto = Database::getInstance()->get("autotheft", array(
+            array('id', '>', 0))
+        );
         $theftauto = $theftauto->results();
         $this->view('autotheft', array(
             "autotheft" => $theftauto
@@ -24,7 +25,9 @@ class Autotheft extends Controller
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
                 $user = $this->model('User');
-                $theftauto = Database::getInstance()->get("autotheft", array('id', '=', Input::get('theft')));
+                $theftauto = Database::getInstance()->get("autotheft", array(
+                    array('id', '=', Input::get('theft'))
+                ));
                 if($theftauto->count()){
                     $theftauto = $theftauto->first();
                     if($user->getTimer('autotheft') <= time()){
@@ -32,7 +35,7 @@ class Autotheft extends Controller
                         $jailChance = mt_rand(1, 3);
                         $chance = mt_rand(1, 100);
                         $carDamage = mt_rand(1, $theftauto->AT_maxDamage);
-                        $userChance = $theftauto->AT_chance; // rank * 2 should be here
+                        $userChance = $theftauto->AT_chance + ($user->stats()->GS_rank * 2);
                         if ($userChance > 100) {
                             $userChance = 100;
                         }
@@ -43,15 +46,33 @@ class Autotheft extends Controller
                                 'GS_prisonCrime' => 'Auto Theft'
                             ));
                             $user->setTimer('prison', 2*60);
-                            Session::flash("error", 'You failed to steal a car from '.$theftauto->AT_name.', you were caught and sent to jail!');
+                            Session::flash('error', 'Security catching you on camera breaking into a vehicle. Police arrived and sent you to Prison.');
                             Redirect::to('/prison');
                         }elseif($chance > $userChance){
                             Session::flash("error", 'You failed to steal a car from '.$theftauto->AT_name.'!');
                         }else{
                             Session::flash("success", 'You successfully stole a car with '.$carDamage.'% damage!');
                             $user->set(array(
-                                "GS_autostolen"       => $user->stats()->GS_autostolen + 1
+                                "GS_autostolen"       => $user->stats()->GS_autostolen + 1,
+                                "GS_exp"              => $user->stats()->GS_exp + ($theftauto->id * $user->stats()->GS_rank)
                             ));
+                            $items = Database::getInstance()->get("items", array(
+                                array("id", '>=', 1),
+                                array("id", '<=', 11)
+                            ));
+                            foreach($items->results() as $item){
+                                $chanceItem = mt_rand(1, 21);
+                                if($chanceItem == $item->id){
+                                    Session::flash("info", 'You have found '.$item->I_name.' in the car.');
+                                    $userItems = explode('-', $user->stats()->GS_items);
+                                    $userItems[($item->id-1)] = $userItems[($item->id-1)] + 1;
+                                    $newItem = implode('-', $userItems);
+                                    $user->set(array(
+                                        "GS_items" => $newItem
+                                    ));
+                                    break;
+                                }
+                            }
                         }
                     }else{
                         Session::flash("error", 'You have to wait!'.$user->getTimer('autotheft'));

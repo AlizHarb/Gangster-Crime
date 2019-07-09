@@ -1,0 +1,35 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+{% if user.getTimer('crime') > time %}
+    <div class="alert alert-info">
+        <i class="fal fa-clock mr-2"></i> You have to wait <span id="crime"></span> to do the next crime.
+    </div>
+{% endif %}
+<div class="game-body">
+    <div class="game-header">Commit a Crime</div>
+    <p class="small">Committing crimes is a quick way to earn cash and experience. You can also find all the items you need to commit robberies.</p>
+    <div class="col-12 col-md-11 mr-auto ml-auto">
+        {% for crime in crimes %}
+            <div class="box-game hover {% if crime.crimes.C_rank > user.stats().GS_rank %} locked {% endif %}" style="background-image: url('{{ base_url }}public/assets/img/pages/crimes/crimes_{{ crime.crimes.id }}.png')">
+                <div class="row">
+                    <div class="col-8 col-md-8">
+                        <div class="text">
+                            <p class="font-weight-bold">{{ crime.crimes.C_name }}</p>
+                            <div class="progress bg-transparent" style="height: 15px">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ crime.perc }}%;" aria-valuemax="100">{{ crime.perc }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-4 text-center">
+                        <form method="post" action="{{ base_url }}crimes/attempt">
+                            <input type="hidden" name="crime" value="{{ crime.crimes.id }}">
+                            <input type="hidden" name="token" value="{{ token }}">
+                            <button class="btn btn-dark mb-0">Attempt</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -4,13 +4,13 @@
 class Home extends Controller
 {
 
+    public function __construct()
+    {
+        parent::__construct(true, false, false);
+    }
+
     public function index()
     {
-        $user = $this->model('User');
-        if(!$user->isLoggedIn()){
-            Redirect::to('/');
-        }
-        
         $this->view('home');
     }
 

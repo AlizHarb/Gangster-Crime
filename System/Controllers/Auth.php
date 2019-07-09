@@ -4,13 +4,12 @@
 class Auth extends Controller
 {
 
+    public function __construct()
+    {
+        parent::__construct(false, false, false);
+    }
+
     public function index(){
-        $user = $this->model('User');
-        if($user->isLoggedIn()){
-            Redirect::to('/home');
-        }
-
-
         if(Session::exists('loginError')) {
             $this->view("auth", array(
                 "loginError" => Session::flash('loginError')

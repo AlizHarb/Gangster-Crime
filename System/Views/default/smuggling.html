@@ -1,0 +1,48 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<ul class="game-tabs">
+    <li class="tab-item"><a href="{{ base_url }}inventory" class="tab-link">Inventory</a></li>
+    <li class="tab-item active"><a href="{{ base_url }}smuggling" class="tab-link">Smuggling</a></li>
+</ul>
+
+<div class="page-img d-none d-md-block">
+    <img src="{{ base_url }}public/assets/img/pages/inventory/header_smuggling-2.jpg" class="img-fluid">
+</div>
+
+<form method="post" action="{{ base_url }}smuggling/action" class="game-body">
+    <div class="game-header">
+        Smuggling
+        <span class="float-right">
+            <button class="btn btn-dark mb-0">Negotiate Prices</button>
+        </span>
+    </div>
+    <p class="small">Your current multiplier is +<span class="text-success">0%</span></p>
+    <p class="small">Travel with as many smuggled goods as you can carry to make a tidy profit by selling to a dealer in any city. Accept the price on offer or negotiate the rate with the dealer, but be careful, you could make less!</p>
+    <div class="game-box">
+        <div class="row">
+            {% for item in items %}
+                <div class="col-6 col-md-3 mb-2">
+                    <p class="font-weight-bold">
+                        {{ item['name'] }}
+                        <span class="badge badge-info float-right">$4,500</span>
+                    </p>
+
+                    <div class="text-center">
+                        <img src="{{ base_url }}public/assets/img/pages/inventory/icons/{{ item['img'] }}" class="img-fluid" style="width: 90px;height:90px;">
+                    </div>
+                    <p><b>You hold:</b> 0 Crates</p>
+                    <input type="number" class="form-control" placeholder="Amount" name="amount_{{ loop.index0 }}" value="0">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="text-center">
+        <p>You are carrying 0 out of 70 units.</p>
+        <p class="small">You can sell up to a maximum of 35 units every 5 minutes.</p>
+        <input type="hidden" name="token" value="{{ token }}">
+        <input type="submit" class="btn btn-dark" name="buy" value="Buy Units">
+        <input type="submit" class="btn btn-dark" name="sell" value="Sell Units">
+    </div>
+</form>
+
+{% endblock %}

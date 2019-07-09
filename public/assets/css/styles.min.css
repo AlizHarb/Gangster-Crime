@@ -196,6 +196,19 @@ header .logo span.announcement{
     font-size: 10px;
     color: #ffffff;
 }
+.game-body .box-game .icons span{
+    font-size: 19px;
+    margin: 4px;
+    color: var(--gray-dark);
+}
+.game-body .box-game.hover:hover{
+    opacity: 0.8;
+    filter:alpha(opacity=80);
+}
+.game-body .box-game.locked{
+    opacity: 0.4;
+    filter:alpha(opacity=40);
+}
 .game-body ul.theft{
     list-style: none;
 }
@@ -235,6 +248,9 @@ ul.game-tabs li.tab-item{
 ul.game-tabs li.tab-item a.tab-link{
     color: #ffffff;
 }
+ul.game-tabs li.tab-item.active{
+    background: #111111;
+}
 ul.game-tabs li.tab-item:hover{
     background: #333333;
 }
@@ -260,6 +276,9 @@ ul.game-tabs li.tab-item:hover{
     background: linear-gradient(to bottom, rgba(120, 20, 21, 0.76), rgba(83, 15, 16, 0.86));
     border: 1px solid #333333;
     border-radius: 5px;
+}
+.font-size{
+    font-size: 9px;
 }
 @media all and (max-width: 768px) {
     .game-body ul.icon-menu li.menu-item{

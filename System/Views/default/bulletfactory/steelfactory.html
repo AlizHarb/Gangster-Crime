@@ -1,0 +1,105 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<ul class="game-tabs">
+    <li class="tab-item"><a href="{{ base_url }}bulletfactory" class="tab-link">Bullet Factory</a></li>
+    <li class="tab-item active"><a href="{{ base_url }}bulletfactory/steel" class="tab-link">Steel Factory</a></li>
+</ul>
+<div class="page-img d-none d-md-block">
+    <img src="{{ base_url }}public/assets/img/pages/bulletfactory/header_steelfactory.jpg" class="img-fluid">
+</div>
+<div class="row">
+    <div class="col-12 col-md-10 mr-auto ml-auto">
+        <div class="game-body">
+            <i class="fal fa-clock"></i> 2 hours, 48 minutes and 6 seconds remain until the next shipment of steel is released.
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="game-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="game-header">Steel Factory</div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="game-box">
+                                <div class="row">
+                                    <div class="col-2 col-md-1 align-self-center">
+                                        <span class="fas fa-cog fa-2x"></span>
+                                    </div>
+                                    <div class="col-10 col-md-11">
+                                        <h5 class="mb-0"><a href="">STRICTLY BUSINESS STEEL</a></h5>
+                                        <p class="small">The demise of Rosflot Steel has allowed this once small producer of Steel to become the joint leader in Steel production throughout Eastern Europe. With links to organized crime, this factory has a known history of paying bribes to further their own business agenda.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="game-box">
+                                <div class="row">
+                                    <div class="col-2 col-md-1 align-self-center">
+                                        <span class="fas fa-cog fa-2x"></span>
+                                    </div>
+                                    <div class="col-10 col-md-11">
+                                        <h5 class="mb-0">THE GOVERNMENT STEEL</h5>
+                                        <p class="small">Wanting to keep some level of influence over the steel industry, the Russian Government controls this state owned factory. Although quality is good, production is often hampered by poorly maintained equipment, relegating the company to a minor player within the industry.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="game-header">Purchase Steel</div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="game-box">
+                                <ul class="statics-menu">
+                                    <li>
+                                        <span class="static-name">Bullet Ratio:</span>
+                                        <span class="static-num">1:40</span>
+                                    </li>
+                                    <li>
+                                        <span class="static-name">Batch Price:</span>
+                                        <span class="static-num">$6,500</span>
+                                    </li>
+                                    <li>
+                                        <span class="static-name">Supply:</span>
+                                        <span class="static-num">550 batches</span>
+                                    </li>
+                                </ul>
+                                <form method="post" action="{{ base_url }}bulletfactory/buysteel" class="text-center">
+                                    <input type="hidden" name="type" value="1">
+                                    <input type="hidden" name="token" value="{{ token }}">
+                                    <button class="btn btn-dark">Purchase 45 Batches</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="game-box">
+                                <ul class="statics-menu">
+                                    <li>
+                                        <span class="static-name">Bullet Ratio:</span>
+                                        <span class="static-num">1:45</span>
+                                    </li>
+                                    <li>
+                                        <span class="static-name">Batch Price:</span>
+                                        <span class="static-num">$7,500</span>
+                                    </li>
+                                    <li>
+                                        <span class="static-name">Supply:</span>
+                                        <span class="static-num">10,000 batches</span>
+                                    </li>
+                                </ul>
+                                <form method="post" action="{{ base_url }}bulletfactory/buysteel" class="text-center">
+                                    <input type="hidden" name="type" value="2">
+                                    <input type="hidden" name="token" value="{{ token }}">
+                                    <button class="btn btn-dark">Purchase 45 Batches</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

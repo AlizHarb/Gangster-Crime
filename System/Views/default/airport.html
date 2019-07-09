@@ -7,13 +7,13 @@
 </ul>
 
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/airport/{{ user.getLocation() | lower }}_header.jpg" class="img-fluid">
+    <img src="{{ base_url }}public/assets/img/pages/airport/{{ user.getLocation().L_name | lower }}_header.jpg" class="img-fluid">
 </div>
 <div class="row">
     <div class="col-12 col-md-10 mr-auto ml-auto">
         {% if user.getTimer('travel') > time %}
-            <div class="alert alert-danger mt-2">
-                The next available flight departs after <span id="travel"></span>
+            <div class="alert alert-info mt-2">
+                <i class="fal fa-plane pr-2"></i> The next available flight departs after <span id="travel"></span>
             </div>
         {% endif %}
         <div class="game-body">

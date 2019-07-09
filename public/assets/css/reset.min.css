@@ -66,7 +66,6 @@ p, ul{
     line-height: 16pt;
     border: 1px solid #333333;
     padding: 2px 11px 4px 12px;
-    margin-bottom: 4px;
 }
 .alert{
     margin-bottom: 4px;
@@ -79,6 +78,9 @@ p, ul{
 }
 .alert-success{
     background: linear-gradient(to bottom right, #7bed9f, #25BC63);
+}
+.alert-info{
+    background: linear-gradient(to bottom right, #33b5e5, #2BBBAD);
 }
 h1,h2,h3,h4,h5{
     text-shadow: 2px 2px 1px #000;
@@ -98,4 +100,20 @@ table thead th , table tbody td{
 }
 table tfoot{
     border-top: 1px solid rgba(255,255,255,.2);
+}
+.pagination.pagination-sm .page-link{
+    padding: 0 5px 0 5px;
+    color: #ffffff;
+    margin: 0 4px 0 0;
+    background-color: #333333;
+    border-color: rgba(255,255,255,.2);
+}
+.pagination .page-item.active .page-link, .pagination .page-item .page-link:hover{
+    background-color: #721c24;
+}
+.pagination-sm .page-item:last-child .page-link{
+    border-radius: 0;
+}
+.pagination-sm .page-item:first-child .page-link{
+    border-radius: 0;
 }

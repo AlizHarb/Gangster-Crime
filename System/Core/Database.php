@@ -49,7 +49,7 @@ class Database
         return $this;
     }
 
-    public function action($action, $table, $where = array())
+    /*public function action($action, $table, $where = array())
     {
         if (count($where) === 3) {
             $operators = array('=','>','<','>=','<=','<>');
@@ -64,11 +64,46 @@ class Database
             }
         }
         return false;
+    }*/
+
+    public function action($action, $table, $fields = array(), $order = null, $sort = null)
+    {
+        $set = '';
+        $valueSet = array();
+        $x = 1;
+        $fieldCount = count($fields);
+        foreach($fields as $where){
+            if (count($where) == 3) {
+                $operators = array('=','>','<','>=','<=','<>');
+                $field		= $where[0];
+                $operator	= $where[1];
+                $value		= $where[2];;
+                if (in_array($operator, $operators)) {
+                    if($fieldCount > $x){
+                        $set .= "${field} {$operator} ? and ";
+                    }
+                    if($fieldCount == $x){
+                        $set .= "${field} {$operator} ?";
+                    }
+                    array_push($valueSet, $value);
+                }
+            }
+            $x++;
+        }
+        if(isset($order) && isset($sort)){
+            $sql = "{$action} FROM {$table} WHERE {$set} order by {$order} {$sort}";
+        }else{
+            $sql = "{$action} FROM {$table} WHERE {$set}";
+        }
+        if (!$this->query($sql, $valueSet)->error()) {
+            return $this;
+        }
+        return false;
     }
 
-    public function get($table, $where)
+    public function get($table, $where = array(), $order = null, $sort = null)
     {
-        return $this->action('SELECT *', $table, $where);
+        return $this->action('SELECT *', $table, $where, $order, $sort);
     }
 
     public function delete($table, $where)
@@ -112,6 +147,32 @@ class Database
 
         if (!$this->query($sql, $fields)->error()) {
             return true;
+        }
+        return false;
+    }
+
+    public function countAll($table, $fields = array(), $where = null)
+    {
+        $set 	= '';
+        $x		= 1;
+        foreach ($fields as $name => $value) {
+            $set .= "SUM(".$name.") as '".$value."' ,";
+            if ($x<count($fields)) {
+                $set .= "SUM(".$name.") as '".$value."' ,";
+            }
+            if ($x==count($fields)) {
+                $set .= "SUM(".$name.") as '".$value."'";
+            }
+            $x++;
+        }
+        if(isset($where)){
+            $sql = "SELECT {$set} FROM {$table} {$where}";
+        }else{
+            $sql = "SELECT {$set} FROM {$table}";
+        }
+
+        if (!$this->query($sql, $fields)->error()) {
+            return $this->first();
         }
         return false;
     }

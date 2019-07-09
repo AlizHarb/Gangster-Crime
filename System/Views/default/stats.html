@@ -1,7 +1,7 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <ul class="game-tabs">
-    <li class="tab-item"><a href="" class="tab-link">Game Statistics</a></li>
+    <li class="tab-item active"><a href="{{ base_url }}stats" class="tab-link">Game Statistics</a></li>
     <li class="tab-item"><a href="" class="tab-link">Casino Statistics</a></li>
 </ul>
 
@@ -13,15 +13,15 @@
                 <ul class="statics-menu">
                     <li>
                         <span class="static-name">Total Money:</span>
-                        <span class="static-num">000</span>
+                        <span class="static-num">${{ (stats.bank + stats.cash) | number_format }}</span>
                         <ul class="statics-menu ml-2">
                             <li>
                                 <span class="static-name">Unbanked Money:</span>
-                                <span class="static-num">00</span>
+                                <span class="static-num">${{ stats.cash | number_format }}</span>
                             </li>
                             <li>
                                 <span class="static-name">Banked Money:</span>
-                                <span class="static-num">00</span>
+                                <span class="static-num">${{ stats.bank | number_format }}</span>
                             </li>
                             <li>
                                 <span class="static-name">Bank Vault:</span>
@@ -33,13 +33,13 @@
                             </li>
                             <li>
                                 <span class="static-name">Avg. Money Per User:</span>
-                                <span class="static-num">00</span>
+                                <span class="static-num">${{ (stats.cash/gangsters) | number_format }}</span>
                             </li>
                         </ul>
                     </li>
                     <li>
                         <span class="static-name">Total Bullets:</span>
-                        <span class="static-num">000</span>
+                        <span class="static-num">{{ stats.bullets | number_format }}</span>
                     </li>
                     <li>
                         <span class="static-name">Messages Sent:</span>
@@ -55,13 +55,21 @@
                         <ul class="statics-menu ml-2">
                             <li>
                                 <span class="static-name text-success">Alive Gangsters:</span>
-                                <span class="static-num text-success">00</span>
+                                <span class="static-num text-success">{{ gangsters | number_format }}</span>
                             </li>
                             <li>
                                 <span class="static-name text-danger">Dead Gangsters:</span>
                                 <span class="static-num text-danger">00</span>
                             </li>
                         </ul>
+                    </li>
+                    <li>
+                        <span class="static-name">Vehicles Stolen:</span>
+                        <span class="static-num">{{ stats.stolen | number_format }}</span>
+                    </li>
+                    <li>
+                        <span class="static-name">Prison Busts (Success / Fail):</span>
+                        <span class="static-num">{{ stats.prisonSuccess | number_format }} / {{ stats.prisonFail | number_format }}</span>
                     </li>
                 </ul>
             </div>

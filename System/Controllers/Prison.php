@@ -4,20 +4,25 @@
 class Prison extends Controller
 {
 
+    public function __construct()
+    {
+        parent::__construct(true, false, true);
+    }
+
     public function index()
     {
         $user = $this->model('User');
-        if(!$user->isLoggedIn()){
-            Redirect::to('/');
-        }
 
         $prisoners = array();
-        $prison = Database::getInstance()->get("gangstersTimer", array('GT_name', '=', "prison"));
+        $prison = Database::getInstance()->get("gangstersTimer", array(
+            array('GT_name', '=', "prison"),
+            array('GT_time', '>=', time())
+        ));
         foreach($prison->results() as $prison){
             $userPrison = $this->model('User');
             $userPrison->find($prison->id);
 
-            if($prison->GT_time >= time() && $userPrison->stats()->GS_location == $user->stats()->GS_location){
+            if($userPrison->stats()->GS_location == $user->stats()->GS_location){
                 $prisoners[] = array(
                     "time"      => $prison->GT_time * 1000,
                     "userInfo"  => $userPrison
@@ -26,7 +31,9 @@ class Prison extends Controller
         }
 
         $buster = array();
-        $busters = Database::getInstance()->get("gangstersStats", array("GS_prisonSuccess", ">", 0));
+        $busters = Database::getInstance()->get("gangstersStats", array(
+            array("GS_prisonSuccess", ">", 0)
+        ), 'GS_prisonSuccess', 'desc limit 5');
         foreach($busters->results() as $bust){
             $userPrison = $this->model('User');
             $userPrison->find($bust->id);
@@ -46,34 +53,45 @@ class Prison extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $time = Database::getInstance()->get('gangstersTimer', array('id', '=', Input::get('prisoner')));
+                $time = Database::getInstance()->get("gangstersTimer", array(
+                    array('id', '=', Input::get('prisoner')),
+                    array('GT_time', '>=', time())
+                ));
                 $time = $time->first();
                 $user = $this->model('User');
+                $mail = $this->model('Mail');
                 $userInfo = $this->model('User');
                 $userInfo->find(Input::get('prisoner'));
-                if($time->GT_name == "prison" && $time->GT_time >= time()){
+                if($time->GT_time >= time()){
                     if($user->getTimer('prison') <= time()){
                         if($userInfo->stats()->GS_prisonReward <= $userInfo->stats()->GS_cash){
                             if($userInfo->data()->id !== $user->data()->id){
                                 if($userInfo->stats()->GS_location == $user->stats()->GS_location){
                                     $chance = mt_rand(1, 3);
                                     if($chance == 1 || $chance == 3){
-                                        Session::flash('error', 'You have failed busting '.$userInfo->data()->name.'.');
+                                        Session::flash('error', 'You were caught trying to bust '.$userInfo->data()->profile.' out of Prison and have been sent to Prison.');
                                         $user->set(array(
-                                            'GS_prisonCrime' => 'Failed bust '.$userInfo->data()->name,
+                                            'GS_prisonCrime' => 'Failed bust '.$userInfo->data()->profile,
                                             'GS_prisonFailed' => $user->stats()->GS_prisonFailed + 1
                                         ));
                                         $user->setTimer('prison', 2*60);
                                     }else{
                                         $user->set(array(
                                             'GS_prisonSuccess' => $user->stats()->GS_prisonSuccess + 1,
-                                            'GS_cash' => $user->stats()->GS_cash + $userInfo->stats()->GS_prisonReward
+                                            'GS_cash' => $user->stats()->GS_cash + $userInfo->stats()->GS_prisonReward,
+                                            "GS_exp"              => $user->stats()->GS_exp + 1
                                         ));
                                         $userInfo->set(array(
                                             "GS_cash" => $userInfo->stats()->GS_cash - $userInfo->stats()->GS_prisonReward
                                         ));
                                         $userInfo->setTimer('prison', 0);
-                                        Session::flash('success', 'You have successfully busted '.$userInfo->data()->name.'.');
+                                        Session::flash('success', 'You have successfully busted '.$userInfo->data()->profile.'.');
+                                        $mail->create(array(
+                                            "M_toUser"      => $userInfo->data()->id,
+                                            "M_fromUser"    => $user->data()->id,
+                                            "M_text"        => $userInfo->data()->profile." has busted you out of prison.",
+                                            "M_date"        => date('Y-m-d H:i:s')
+                                        ));
                                     }
                                 }else{
                                     Session::flash('error', 'You can not bust someone in another city.');
