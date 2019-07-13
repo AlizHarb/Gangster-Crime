@@ -3,10 +3,13 @@
 
 class Healthcare extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
-        parent::__construct(true, true, false);
+        $this->_db = Database::getInstance();
+
+        parent::__construct(true, true, true);
     }
 
     public function index()
@@ -43,7 +46,7 @@ class Healthcare extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $user = $this->model('User');
+                $user = Model::get('User');
                 $healthCarePlans = array(
                     0 => array(
                         "name"      => "No Plan",
@@ -102,7 +105,7 @@ class Healthcare extends Controller
     {
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
-                $user = $this->model('User');
+                $user = Model::get('User');
                 $healthCarePlans = array(
                     0 => array(
                         "name"      => "No Plan",
@@ -127,7 +130,7 @@ class Healthcare extends Controller
                 );
                 $price = $healthCarePlans[$user->getHospital()->H_plan]["price"] * Input::get('hours');
                 $increaseHealth = ($user->getRank()->R_health * ($user->stats()->GS_hospitalHours * ($healthCarePlans[$user->getHospital()->H_plan]["increase"] / 100)));
-                $user = $this->model('User');
+                $user = Model::get('User');
                 if($user->getHospital()->H_plan < 3){
                     if($price <= $user->stats()->GS_cash){
                         if(($user->stats()->GS_health - $increaseHealth) > 0){

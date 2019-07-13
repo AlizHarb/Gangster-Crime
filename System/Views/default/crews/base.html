@@ -1,0 +1,63 @@
+{% extends 'default/layouts/loggedin.html' %}
+{% block body %}
+<ul class="game-tabs">
+    <li class="tab-item active"><a href="{{ settings.get('website_url') }}crews" class="tab-link">Overview</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/bank" class="tab-link">Crew Bank</a></li>
+{% if user.stats().GS_crewLevel == 6 %}
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/manage" class="tab-link">Manage Crew</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/edit" class="tab-link">Edit Crew</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/recruitment" class="tab-link">Crew Recruitment</a></li>
+{% elseif user.stats().GS_crewLevel >= 5 %}
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/edit" class="tab-link">Edit Crew</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/recruitment" class="tab-link">Crew Recruitment</a></li>
+{% elseif user.stats().GS_crewLevel >= 4 and user.stats().GS_crewLevel >= 3 and user.stats().GS_crewLevel >= 2 %}
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}crews/recruitment" class="tab-link">Crew Recruitment</a></li>
+{% endif %}
+</ul>
+<div class="game-body">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="game-header">Money In Crew</div>
+            <div class="game-box">
+                <ul class="statics-menu">
+                    <li>
+                        <span class="static-name">Money:</span>
+                        <span class="static-num">${{ crew.data().C_bank | number_format }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="game-header">Bullets In Crew</div>
+            <div class="game-box">
+                <ul class="statics-menu">
+                    <li>
+                        <span class="static-name">Bullets:</span>
+                        <span class="static-num">{{ crew.data().C_bullets | number_format }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="game-body">
+    <div class="game-header">Crew Gangsters <small>({{ gangstersCount | number_format }} Gangsters)</small></div>
+    <div class="game-box">
+        {% for gangster in gangsters %}
+            <span data-toggle="tooltip" title="{{ gangster.level }}">{{ gangster.user.data().profile | raw }}</span> -
+        {% endfor %}
+    </div>
+</div>
+<div class="game-body">
+    <div class="game-header">Crew Text</div>
+    <div class="game-box">
+        <p class="small">
+            {% if crew.data().C_text %}
+                {{ crew.data().C_text | raw }}
+            {% else %}
+                No Crew Text.
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endblock %}

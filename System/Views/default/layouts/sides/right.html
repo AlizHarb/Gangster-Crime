@@ -1,7 +1,7 @@
 <div class="navigation">
     <div class="top">
-        <a href="{{ base_url }}messaging"><span class="fas fa-envelope {% if mail.checkMail %}text-white faa-shake animated{% endif %}"></span></a>
-        <a href="{{ base_url }}airport">{{ user.getLocation().L_name }}</a>
+        <a href="{{ settings.get('website_url') }}messaging"><span class="fas fa-envelope {% if mail.checkMail %}text-white faa-shake animated{% endif %}"></span></a>
+        <a href="{{ settings.get('website_url') }}airport">{{ location.getUserLocation().L_name }}</a>
         <form>
             <div class="form-group">
                 <input class="form-control" type="text" name="gangster_name" placeholder="Gangster Name">
@@ -17,7 +17,7 @@
                 </div>
             {% else %}
                 {{ user.getRank().R_name }}
-                <a class="ml-3" href="{{ base_url }}credits">Buy Now</a>
+                <a class="ml-3" href="{{ settings.get('website_url') }}credits">Buy Now</a>
             {% endif %}
         </li>
         <li class="menu-item">

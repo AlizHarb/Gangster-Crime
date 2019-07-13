@@ -3,18 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Gangsters Crime</title>
+    <title>{{ settings.get('website_name') }}</title>
     <!-- CSS -->
     <link href="https://fonts.googleapis.com/css?family=Cabin|Homenaje|Monda|Lobster|Cuprum|Pacifico|Arapey|Marcellus SC|Germania One|Electrolize|Oswald|Signika|Abel|Play|Electrolize|Marmelad|Special Elite|Pathway Gothic One|Alike|Kadwa|Domine" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/css/all.css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/css/fontawesome.min.css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/css/font-awesome-animation.min.css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/css/reset.min.css">
-    <link rel="stylesheet" href="{{ base_url }}public/assets/css/styles.min.css">
+    <link rel="stylesheet" href="{{ settings.get('website_url') }}public/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ settings.get('website_url') }}public/assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="{{ settings.get('website_url') }}public/assets/css/font-awesome-animation.min.css">
+    <link rel="stylesheet" href="{{ settings.get('website_url') }}public/assets/css/reset.min.css">
+    <link rel="stylesheet" href="{{ settings.get('website_url') }}public/assets/css/styles.min.css">
     <style type="text/css">
         html, body {
-            background: #000 url("{{ base_url }}public/assets/img/backgrounds/locations/{{ user.getLocation().L_name | lower }}.png") no-repeat center center fixed;
+            background: #000 url("{{ settings.get('website_url') }}public/assets/img/backgrounds/locations/{{ location.getUserLocation().L_name | lower }}.png") no-repeat center center fixed;
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -25,7 +24,7 @@
 <body class="h-100">
 <header>
     <div class="logo text-center text-md-left">
-        <span class="title">Gangsters Crime</span>
+        <span class="title">{{ settings.get('website_name') }}</span>
         <span class="time d-none d-md-inline-block">{{ "now" | date("g:i") }}</span>
         <span class="announcement d-none d-md-inline-block">
             <a href="">Here is the announcement <text></text></a>
@@ -40,16 +39,16 @@
         <div class="col-12 col-lg-8">
             <div class="game-body">
                 <ul class="icon-menu">
-                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item {% if user.getTimer('travel') > time %} in-active {% endif %}"><a href="{{ base_url }}airport" class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Auto Theft" class="menu-item {% if user.getTimer('autotheft') > time %} in-active {% endif %}"><a href="{{ base_url }}autotheft" class="menu-link"><i class="fas fa-car"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Crimes" class="menu-item {% if user.getTimer('crime') > time %} in-active {% endif %}"><a href="{{ base_url }}/crimes" class="menu-link"><i class="fas fa-skull-crossbones"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Extortion" class="menu-item"><a href="{{ base_url }}extortion" class="menu-link"><i class="fas fa-hands"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Hijack" class="menu-item"><a href="{{ base_url }}hijack" class="menu-link"><i class="fas fa-truck-moving"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Organized Crime" class="menu-item"><a href="{{ base_url }}organizedcrime" class="menu-link"><i class="fas fa-gem"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Prison" class="menu-item {% if user.getTimer('prison') > time %} in-active {% endif %}"><a href="{{ base_url }}prison" class="menu-link"><i class="fas fa-tally"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Robbery" class="menu-item"><a href="{{ base_url }}robbery" class="menu-link"><i class="fas fa-theater-masks"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Smuggling" class="menu-item"><a href="{{ base_url }}smuggling" class="menu-link"><i class="fas fa-suitcase"></i></a></li>
-                    <li data-toggle="tooltip" data-placement="bottom" title="Stock Market" class="menu-item"><a href="{{ base_url }}stockmarket" class="menu-link"><i class="fas fa-chart-line"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Airport" class="menu-item {% if user.getTimer('travel') > time %} in-active {% endif %}"><a href="{{ settings.get('website_url') }}airport" class="menu-link"><i class="fas fa-plane-departure"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Auto Theft" class="menu-item {% if user.getTimer('autotheft') > time %} in-active {% endif %}"><a href="{{ settings.get('website_url') }}autotheft" class="menu-link"><i class="fas fa-car"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Crimes" class="menu-item {% if user.getTimer('crime') > time %} in-active {% endif %}"><a href="{{ settings.get('website_url') }}/crimes" class="menu-link"><i class="fas fa-skull-crossbones"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Extortion" class="menu-item"><a href="{{ settings.get('website_url') }}extortion" class="menu-link"><i class="fas fa-hands"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Hijack" class="menu-item"><a href="{{ settings.get('website_url') }}hijack" class="menu-link"><i class="fas fa-truck-moving"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Organized Crime" class="menu-item"><a href="{{ settings.get('website_url') }}organizedcrime" class="menu-link"><i class="fas fa-gem"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Prison" class="menu-item {% if user.getTimer('prison') > time %} in-active {% endif %}"><a href="{{ settings.get('website_url') }}prison" class="menu-link"><i class="fas fa-tally"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Robbery" class="menu-item"><a href="{{ settings.get('website_url') }}robbery" class="menu-link"><i class="fas fa-theater-masks"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Smuggling" class="menu-item"><a href="{{ settings.get('website_url') }}smuggling" class="menu-link"><i class="fas fa-suitcase"></i></a></li>
+                    <li data-toggle="tooltip" data-placement="bottom" title="Stock Market" class="menu-item"><a href="{{ settings.get('website_url') }}stockmarket" class="menu-link"><i class="fas fa-chart-line"></i></a></li>
                 </ul>
             </div>
             {% if success %}
@@ -76,14 +75,18 @@
 </div>
 
 <!-- JavaScript -->
-<script src="{{ base_url }}public/assets/js/jquery-3.3.1.slim.min.js"></script>
-<script src="{{ base_url }}public/assets/js/popper.min.js"></script>
-<script src="{{ base_url }}public/assets/js/jquery.plugin.min.js"></script>
-<script src="{{ base_url }}public/assets/js/jquery.countdown.min.js"></script>
-<script src="{{ base_url }}public/assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="{{ base_url }}public/assets/js/jquery.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/js/jquery-3.3.1.slim.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/js/popper.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/js/jquery.plugin.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/js/jquery.countdown.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="{{ settings.get('website_url') }}public/assets/js/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
+        $("#checkAll").change(function (e) {
+            $('#cars').prop('checked', $(e.target).prop('checked'));
+        });
+
         $('#travel').countdown({until: new Date({{ user.convertTimer('travel') }}), compact: true, format: 'MS', expiryText:'no', alwaysExpire:true});
         $('#autotheft').countdown({until: new Date({{ user.convertTimer('autotheft') }}), compact: true, format: 'MS', expiryText:'no', alwaysExpire:true});
         $('#crime').countdown({until: new Date({{ user.convertTimer('crime') }}), compact: true, format: 'MS', expiryText:'0', alwaysExpire:true});
@@ -91,10 +94,17 @@
         $('#releaseTime').countdown({until: new Date({{ nextRelease }}), compact: true, format: 'HMS', expiryText:'no', alwaysExpire:true});
         $('#bank').countdown({until: new Date({{ user.convertTimer('bank') }}), compact: true, format: 'HMS', expiryText:'no', alwaysExpire:true});
         $('#inHospital').countdown({until: new Date({{ user.convertTimer('hospital') }}), compact: true, format: 'HMS', expiryText:'no', alwaysExpire:true});
+        $('#donate').countdown({until: new Date({{ user.convertTimer('donate') }}), compact: true, format: 'MS', expiryText:'no', alwaysExpire:true});
         $('#hospitalPlan').countdown({until: new Date({{ user.data().hospitalTime }}), compact: true, format: 'DHMS', expiryText:'no', alwaysExpire:true});
         {% for prisoner in prisoners %}
             $('#jailTime-{{ prisoner.userInfo.data().id }}').countdown({until: new Date({{ prisoner.time }}), compact: true, format: 'HMS', expiryText:'Already out', alwaysExpire:true});
         {% endfor %}
+        {% for car in garage %}
+            {% if car.car.GA_shipTime > time %}
+                $('#shipTime-{{ car.car.id }}').countdown({until: new Date({{ car.timeConvert }}), compact: true, format: 'HMS', expiryText:'Already shipped', alwaysExpire:true});
+            {% endif %}
+        {% endfor %}
+
     });
 </script>
 </body>

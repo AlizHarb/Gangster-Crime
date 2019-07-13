@@ -1,7 +1,7 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <ul class="game-tabs">
-    <li class="tab-item active"><a href="{{ base_url }}stats" class="tab-link">Game Statistics</a></li>
+    <li class="tab-item active"><a href="{{ settings.get('website_url') }}stats" class="tab-link">Game Statistics</a></li>
     <li class="tab-item"><a href="" class="tab-link">Casino Statistics</a></li>
 </ul>
 

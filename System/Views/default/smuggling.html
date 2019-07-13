@@ -1,15 +1,15 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <ul class="game-tabs">
-    <li class="tab-item"><a href="{{ base_url }}inventory" class="tab-link">Inventory</a></li>
-    <li class="tab-item active"><a href="{{ base_url }}smuggling" class="tab-link">Smuggling</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}inventory" class="tab-link">Inventory</a></li>
+    <li class="tab-item active"><a href="{{ settings.get('website_url') }}smuggling" class="tab-link">Smuggling</a></li>
 </ul>
 
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/inventory/header_smuggling-2.jpg" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/inventory/header_smuggling-2.jpg" class="img-fluid">
 </div>
 
-<form method="post" action="{{ base_url }}smuggling/action" class="game-body">
+<form method="post" action="{{ settings.get('website_url') }}smuggling/action" class="game-body">
     <div class="game-header">
         Smuggling
         <span class="float-right">
@@ -28,7 +28,7 @@
                     </p>
 
                     <div class="text-center">
-                        <img src="{{ base_url }}public/assets/img/pages/inventory/icons/{{ item['img'] }}" class="img-fluid" style="width: 90px;height:90px;">
+                        <img src="{{ settings.get('website_url') }}public/assets/img/pages/inventory/icons/{{ item['img'] }}" class="img-fluid" style="width: 90px;height:90px;">
                     </div>
                     <p><b>You hold:</b> 0 Crates</p>
                     <input type="number" class="form-control" placeholder="Amount" name="amount_{{ loop.index0 }}" value="0">

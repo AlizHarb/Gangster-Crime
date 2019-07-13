@@ -1,7 +1,7 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/prison/header_prison_{{ user.getLocation().L_name | lower }}.jpg" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/prison/header_prison_{{ location.getUserLocation().L_name | lower }}.jpg" class="img-fluid">
 </div>
 <div class="game-body">
     <div class="game-header">Prison</div>
@@ -33,7 +33,7 @@
                             <td>${{ prisoner.userInfo.stats().GS_prisonReward | number_format }}</td>
                             <td width="10%" class="m-0 p-0">
                                 {% if prisoner.userInfo.data().id != user.data().id %}
-                                    <form method="post" action="{{ base_url }}prison/bust">
+                                    <form method="post" action="{{ settings.get('website_url') }}prison/bust">
                                         <input type="hidden" name="prisoner" value="{{ prisoner.userInfo.data().id }}">
                                         <input type="hidden" name="token" value="{{ token }}">
                                         <button class="btn btn-dark m-0">Bust</button>
@@ -77,14 +77,14 @@
             <div class="game-header">Bribes</div>
             <div class="game-box">
                 <span class="small">You have {{ user.stats().GS_bribe | number_format }} Bribes.</span>
-                <form method="post" action="{{ base_url }}prison/bribe" class="d-inline-block">
+                <form method="post" action="{{ settings.get('website_url') }}prison/bribe" class="d-inline-block">
                     <input type="hidden" name="token" value="{{ token }}">
                     <button class="btn btn-dark">Use a Bribe</button>
                 </form>
             </div>
             <div class="game-header">Bust Reward (Current: ${{ user.stats().GS_prisonReward | number_format }})</div>
             <div class="game-box">
-                <form method="post" action="{{ base_url }}prison/reward" class="d-inline-block">
+                <form method="post" action="{{ settings.get('website_url') }}prison/reward" class="d-inline-block">
                     <p class="small">Set a bust reward for other users to encourage them to bust you faster!</p>
                     <input class="form-control" type="number" name="reward" placeholder="${{ user.stats().GS_prisonReward }}">
                     <input type="hidden" name="token" value="{{ token }}">

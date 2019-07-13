@@ -3,9 +3,12 @@
 
 class Smuggling extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, true, true);
     }
 
@@ -54,7 +57,7 @@ class Smuggling extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $user = $this->model('User');
+                $user = Model::get('User');
                 //$smuggling = explode('-', $user->stats()->GS_smuggling);
 
                 if(Input::get('buy')){

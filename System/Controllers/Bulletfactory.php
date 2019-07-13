@@ -3,24 +3,22 @@
 
 class Bulletfactory extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, true, true);
     }
 
     public function index()
     {
-        $user = $this->model('User');
-        $property = $this->model('Properties');
+        $user       = Model::get('User');
+        $property   = Model::get('Property');
         $property->find($user->stats()->GS_location);
 
-        $location = Database::getInstance()->get("locations", array(
-            array('id', '=', $user->stats()->GS_location)
-        ));
-        $location = $location->first();
         $this->view('bulletfactory/bulletfactory', array(
-            "location" => $location,
             "nextRelease" => $property->data()->P_time * 1000
         ));
     }
@@ -34,12 +32,13 @@ class Bulletfactory extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $property = $this->model('Properties');
-                $user = $this->model('User');
-                $property->find($user->data()->GS_location);
+                $user       = Model::get('User');
+                $location   = Model::get('Location');
+                $property   = Model::get('Property');
+                $property->find($user->stats()->GS_location);
                 $maxBullet = $user->stats()->GS_rank * 10;
-                $bulletsCost = Input::get('bullets') * $user->getLocation()->L_bulletsCost;
-                if($user->getLocation()->L_bullets >= Input::get('bullets')){
+                $bulletsCost = Input::get('bullets') * $location->getUserLocation()->L_bulletsCost;
+                if($location->getUserLocation()->L_bullets >= Input::get('bullets')){
                     if($user->stats()->GS_cash >= $bulletsCost){
                         if($user->getTimer('bulletsfactory') <= time()){
                             $validate = new Validate();
@@ -58,7 +57,9 @@ class Bulletfactory extends Controller
                                     "GS_bullets" => $user->stats()->GS_bullets + Input::get('bullets')
                                 ));
                                 $user->setTimer('bulletsfactory', 1*60);
-                                Database::getInstance()->update("locations", "id = ".$user->stats()->GS_location, array("L_bullets" => $user->getLocation()->L_bullets - Input::get('bullets')));
+                                $location->update("id = ".$user->stats()->GS_location, array(
+                                    "L_bullets" => $location->getUserLocation()->L_bullets - Input::get('bullets')
+                                ));
                                 Session::put('success', 'You have bought '.number_format(Input::get('bullets')).' for $'.number_format($bulletsCost));
                             }else{
                                 $err = array();

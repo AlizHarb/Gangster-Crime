@@ -3,15 +3,18 @@
 
 class Stats extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, false, false);
     }
 
     public function index()
     {
-        $stats = Database::getInstance()->countAll("gangstersStats", array(
+        $stats = $this->_db->countAll("gangstersStats", array(
             'GS_cash' => 'cash',
             'GS_bank' => 'bank',
             'GS_bullets' => 'bullets',
@@ -19,7 +22,7 @@ class Stats extends Controller
             'GS_prisonFailed' => 'prisonFail',
             'GS_autostolen' => 'stolen',
         ));
-        $gangsters = Database::getInstance()->get("gangsters", array(
+        $gangsters = $this->_db->get("gangsters", array(
             array('id', '>', 0)
         ));
         $gangsters = $gangsters->count();

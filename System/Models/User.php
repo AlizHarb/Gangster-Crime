@@ -14,24 +14,25 @@ class User
     {
         $this->_db 			= Database::getInstance();
         $this->_sessionName = Config::get('session/sessionName');
+
         if (!$user) {
             if (Session::exists($this->_sessionName)) {
                 $user = Session::get($this->_sessionName);
                 if ($this->find($user)) {
                     $this->_isLoggedIn = true;
+                    $this->checkSession();
                     $this->checkRank();
                     $this->checkBank();
                     $this->checkHospital();
+
+                    $car = Model::get('Car');
+                    $car->checkUserCars($this->data()->id);
                 } else {
                     self::logout();
                 }
             }
         } else {
-            if($user !== 0){
-                $this->find($user);
-            }else{
-                $this->find(0);
-            }
+            $this->find($user);
         }
     }
 
@@ -51,55 +52,52 @@ class User
 
     public function find($user = null)
     {
-        if($user == 0){
-            $this->data()->profile = "System";
-            $this->data()->name = "System";
-            $this->data()->avatar = "public/assets/img/avatar_small.jpg";
-        }else{
-            if ($user) {
-                $fields = (is_numeric($user)) ? 'id' : 'G_name';
-                $data 	= $this->_db->get('gangsters', array(
-                    array($fields, '=', $user)
+        if ($user) {
+            $fields = (is_numeric($user)) ? 'id' : 'G_name';
+            $data 	= $this->_db->get('gangsters', array(
+                array($fields, '=', $user)
+            ));
+            if ($data->count()) {
+                $this->_data = $data->first();
+
+                $stats 	= $this->_db->get('gangstersStats', array(
+                    array("id", '=', $this->data()->id)
                 ));
-                if ($data->count()) {
-                    $this->_data = $data->first();
-
-                    $stats 	= $this->_db->get('gangstersStats', array(
-                        array("id", '=', $this->data()->id)
+                if($stats->count()){
+                    $this->_stats = $stats->first();
+                }else{
+                    $this->_db->insert('gangstersStats', array(
+                        "id" => $this->data()->id
                     ));
-                    if($stats->count()){
-                        $this->_stats = $stats->first();
-                    }else{
-                        $this->_db->insert('gangstersStats', array(
-                            "id" => $this->data()->id
-                        ));
-                    }
-
-                    $nextRank = $this->_db->get("ranks", array(
-                        array("id", '=', $this->stats()->GS_rank+1)
-                    ));
-                    $nextRank = $nextRank->first();
-                    $expIntoNextRank =  $this->stats()->GS_exp - $this->getRank()->R_fromExp;
-                    $expNeededForNextRank = $nextRank->R_fromExp - $this->getRank()->R_fromExp;
-                    $this->data()->expPerc = round($expIntoNextRank / $expNeededForNextRank * 100, 2);
-
-                    $maxHealth = $this->getRank()->R_health;
-                    $this->data()->health = ($maxHealth - $this->stats()->GS_health) / $maxHealth * 100;
-                    if ($this->data()->health < 0) $this->data()->health = 0;
-
-                    $this->data()->hospitalTime = $this->getHospital()->H_planTime * 1000;
-
-                    if($this->stats()->GS_crew == 0){
-                        $this->data()->crew = "Crewless";
-                    }else{
-                        $this->data()->crew = "";
-                    }
-                    $this->data()->profile = "<a class='' href='profile/".$this->data()->G_name."'>".$this->data()->G_name."</a>";
-                    $this->data()->name = $this->data()->G_name;
-                    $this->data()->avatar = $this->data()->G_avatar;
-
-                    return true;
                 }
+
+                $nextRank = $this->_db->get("ranks", array(
+                    array("id", '=', $this->stats()->GS_rank+1)
+                ));
+                $nextRank = $nextRank->first();
+                $expIntoNextRank =  $this->stats()->GS_exp - $this->getRank()->R_fromExp;
+                $expNeededForNextRank = $nextRank->R_fromExp - $this->getRank()->R_fromExp;
+                $this->data()->expPerc = round($expIntoNextRank / $expNeededForNextRank * 100, 2);
+
+                $maxHealth = $this->getRank()->R_health;
+                $this->data()->health = ($maxHealth - $this->stats()->GS_health) / $maxHealth * 100;
+                if ($this->data()->health < 0) $this->data()->health = 0;
+
+                $this->data()->hospitalTime = $this->getHospital()->H_planTime * 1000;
+
+                if($this->stats()->GS_crew == 0){
+                    $this->data()->crew = "Crewless";
+                }else{
+                    $crew = Model::get('Crew');
+                    $crew->find($this->stats()->GS_crew);
+
+                    $this->data()->crew = $crew->data()->C_name;
+                }
+                $this->data()->profile = "<a class='' href='profile/".$this->data()->G_name."'>".$this->data()->G_name."</a>";
+                $this->data()->name = $this->data()->G_name;
+                $this->data()->avatar = $this->data()->G_avatar;
+
+                return true;
             }
         }
         return false;
@@ -154,6 +152,17 @@ class User
             if ($user) {
                 if ($this->data()->G_password === Hash::make($password, $this->data()->G_salt)) {
                     Session::put($this->_sessionName, $this->data()->id);
+                    $hash = Hash::unique();
+                    $hashCheck = $this->_db->get('gangstersSessions', array(
+                        array('user','=',$this->data()->id)
+                    ));
+                    if (!$hashCheck->count()) {
+                        $this->_db->insert('gangstersSessions', array(
+                            'user' => $this->data()->id,
+                            'hash' => $hash,
+                            'time' => time()+Config::get('session/sessionTime')
+                        ));
+                    }
                     return true;
                 }
             }
@@ -161,10 +170,27 @@ class User
         return false;
     }
 
+    public function checkSession()
+    {
+        $session = $this->_db->get('gangstersSessions', array(
+            array('user','=',$this->data()->id)
+        ));
+        if($session->count()){
+            $session = $session->first();
+            if($session->time <= time()){
+                self::logout();
+            }else{
+                $this->_db->update('gangstersSessions', 'user='.$this->data()->id, array(
+                    'time' => time()+Config::get('session/sessionTime')
+                ));
+            }
+        }
+    }
+
     public function checkBank()
     {
-        require_once("Mail.php");
-        $mail = new Mail();
+        $mail = Model::get('Mail');
+
         if($this->getTimer('bank') <= time() && $this->stats()->GS_bank > 0){
             $interest = ($this->stats()->GS_bank < 1000000000 ? $interest = 0.30 : $interest = 0.01);
             if($interest == 0.30){
@@ -191,8 +217,8 @@ class User
 
     public function checkRank()
     {
-        require_once("Mail.php");
-        $mail = new Mail();
+        $mail = Model::get('Mail');
+
         $nextRank = $this->_db->get("ranks", array(
             array("id", '=', $this->stats()->GS_rank+1)
         ));
@@ -204,7 +230,7 @@ class User
             $mail->create(array(
                 "M_toUser"      => $this->data()->id,
                 "M_fromUser"    => 0,
-                "M_text"        => "You have been promoted to ".$nextRank->R_name.". Keep up the good work!",
+                "M_text"        => "You have been promoted to <b>".$nextRank->R_name."</b>. Keep up the good work!",
                 "M_date"        => date('Y-m-d H:i:s')
             ));
         }
@@ -216,14 +242,6 @@ class User
             array("id", '=', $this->stats()->GS_rank)
         ));
         return $rank->first();
-    }
-
-    public function getLocation()
-    {
-        $location = $this->_db->get("locations", array(
-            array("id", '=', $this->stats()->GS_location)
-        ));
-        return $location->first();
     }
 
     public function setHospital($fields = array())
@@ -289,6 +307,9 @@ class User
 
     public function logout()
     {
+        $this->_db->delete('gangstersSessions', array(
+            array('user', '=', $this->data()->id)
+        ));
         Session::delete($this->_sessionName);
     }
 

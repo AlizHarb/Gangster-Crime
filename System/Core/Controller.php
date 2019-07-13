@@ -3,16 +3,13 @@
 
 class Controller
 {
-
-    public function model($model)
-    {
-        require_once("System/Models/".$model.'.php');
-        return new $model();
-    }
+    private $_db;
 
     public function __construct($login = true, $jail = false, $hospital = false)
     {
-        $user = $this->model('User');
+        $this->_db = Database::getInstance();
+
+        $user = Model::get('User');
         if($login && !$user->isLoggedIn()){
             Redirect::to('/');
         }
@@ -29,34 +26,19 @@ class Controller
 
     public function view($view, $data = array())
     {
-        $theme = "default";
-        $loader = new Twig_Loader_Filesystem(Config::get('template/template_dir'));
-        $twig = new Twig_Environment($loader, array(
-            'cache' => false,
-            //'cache' => Config::get('template/cache_dir'),
-        ));
+        $settings = Model::get('Settings');
+        $theme = $settings::get('website_theme');
+        if(file_exists("System/Views/".$theme)){
+            $loader = new Twig_Loader_Filesystem(Config::get('template/template_dir'));
+            $twig = new Twig_Environment($loader, array(
+                'cache' => Config::get('template/cache'),
+            ));
+            require_once('System/Config/Globals.php');
 
-        $user = $this->model('User');
-        $mail = $this->model('Mail');
-        if($user->isLoggedIn()){
-            $twig->addGlobal('user', $user);
-            $twig->addGlobal('mail', $mail);
+            echo $twig->render($theme.'/'.$view.'.html', $data);
+        }else{
+            echo "<h1>The {$theme} theme is not exist in Views directory.</h1>";
         }
-        $twig->addGlobal('base_url', Config::get('website/base_url'));
-        $twig->addGlobal('token', Token::generate());
-        $twig->addGlobal('time', time());
-
-        if(Session::exists('error')){
-            $twig->addGlobal('error', Session::flash('error'));
-        }
-        if(Session::exists('success')){
-            $twig->addGlobal('success', Session::flash('success'));
-        }
-        if(Session::exists('info')){
-            $twig->addGlobal('info', Session::flash('info'));
-        }
-
-        echo $twig->render($theme.'/'.$view.'.html', $data);
     }
 
 }

@@ -7,7 +7,7 @@
 </ul>
 
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/airport/{{ user.getLocation().L_name | lower }}_header.jpg" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/airport/{{ location.getUserLocation().L_name | lower }}_header.jpg" class="img-fluid">
 </div>
 <div class="row">
     <div class="col-12 col-md-10 mr-auto ml-auto">
@@ -17,14 +17,14 @@
             </div>
         {% endif %}
         <div class="game-body">
-            <i class="fas fa-suitcase icon-design"></i> <a href="{{ base_url }}smuggling">Need extra cash? Carry smuggled goods every time you travel.</a>
+            <i class="fas fa-suitcase icon-design"></i> <a href="{{ settings.get('website_url') }}smuggling">Need extra cash? Carry smuggled goods every time you travel.</a>
         </div>
         <div class="game-body">
             <div class="game-header">Travel Destination</div>
             <div class="row">
                 {% for location in locations %}
                     <div class="col-12 col-md-6">
-                        <form method="post" action="{{ base_url }}airport/fly" class="box-game" style="background-image: url('{{ base_url }}public/assets/img/pages/airport/{{ location.L_name | lower }}_travel.png')">
+                        <form method="post" action="{{ settings.get('website_url') }}airport/fly" class="box-game" style="background-image: url('{{ settings.get('website_url') }}public/assets/img/pages/airport/{{ location.L_name | lower }}_travel.png')">
                             <div class="row">
                                 <div class="col-8">
                                     <div class="text">

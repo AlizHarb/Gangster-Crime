@@ -1,12 +1,12 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <ul class="game-tabs">
-    <li class="tab-item active"><a href="{{ base_url }}centrobank" class="tab-link">Centro Bank</a></li>
-    <li class="tab-item"><a href="{{ base_url }}/centrobank/vault" class="tab-link">Bank Vault</a></li>
-    <li class="tab-item"><a href="{{ base_url }}/escrow" class="tab-link">Escrow Trading</a></li>
+    <li class="tab-item active"><a href="{{ settings.get('website_url') }}centrobank" class="tab-link">Centro Bank</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}/centrobank/vault" class="tab-link">Bank Vault</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}/escrow" class="tab-link">Escrow Trading</a></li>
 </ul>
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/centrobank/header_centrobank.jpg" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/centrobank/header_centrobank.jpg" class="img-fluid">
 </div>
 <div class="row">
     <div class="col-12">
@@ -16,7 +16,7 @@
                     <div class="game-header">Interest Calculator</div>
                     <div class="game-box text-center">
                         <p class="small">Here you can find out how much you'll make back from depositing cash amounts for a large number of days.</p>
-                        <form method="post" action="{{ base_url }}centrobank/calculator">
+                        <form method="post" action="{{ settings.get('website_url') }}centrobank/calculator">
                             <input class="form-control" name="cash" type="number" placeholder="Cash">
                             <input class="form-control" name="days" type="number" placeholder="Days">
                             <input type="hidden" name="token" value="{{ token }}">
@@ -54,13 +54,13 @@
                             </li>
                         </ul>
                         {% if user.getTimer('bank') <= time %}
-                            <form method="post" action="{{ base_url }}centrobank/deposit" class="text-center">
+                            <form method="post" action="{{ settings.get('website_url') }}centrobank/deposit" class="text-center">
                                 <input class="form-control" name="cash" type="number" placeholder="Enter Amount">
                                 <input type="hidden" name="token" value="{{ token }}">
                                 <button class="btn btn-dark mb-0">Deposit Money</button>
                             </form>
                         {% else %}
-                            <form method="post" action="{{ base_url }}centrobank/withdraw" class="text-center">
+                            <form method="post" action="{{ settings.get('website_url') }}centrobank/withdraw" class="text-center">
                                 <input class="form-control" name="cash" type="number" placeholder="Enter Amount">
                                 <input type="hidden" name="token" value="{{ token }}">
                                 <button class="btn btn-dark mb-0">Withdraw Money</button>
@@ -72,7 +72,7 @@
                     <div class="game-header">Money Transfer</div>
                     <div class="game-box">
                         <p class="small">All transfers are subject to a 12% tax charge. When sending money to a bank vault please precede the account number with a # sign.</p>
-                        <form method="post" action="{{ base_url }}centrobank/transfer">
+                        <form method="post" action="{{ settings.get('website_url') }}centrobank/transfer">
                             <input class="form-control" name="recipient" type="text" placeholder="Recipient">
                             <input class="form-control" name="amount" type="number" placeholder="Amount">
                             <input type="hidden" name="token" value="{{ token }}">

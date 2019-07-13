@@ -56,7 +56,7 @@ class Auth extends Controller
                     )
                 ));
                 if($validation->passed()){
-                    $user = $this->model('User');
+                    $user = Model::get('User');
                     $salt = Hash::salt(12);
                     try {
                         $user->create(array(
@@ -101,7 +101,7 @@ class Auth extends Controller
                     )
                 ));
                 if ($validation->passed()) {
-                    $user 		= $this->model('User');
+                    $user 		= Model::get('User');
                     $login 		= $user->login(Input::get('gangster_username'), Input::get('gangster_password'));
                     if ($login) {
                         Redirect::to('/home');

@@ -3,23 +3,26 @@
 
 class Centrobank extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, true, true);
     }
 
     public function index()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
         $toTransactions = array();
         $fromTransactions = array();
 
-        $transactionsTo = Database::getInstance()->get("transactions", array(
+        $transactionsTo = $this->_db->get("transactions", array(
             array('T_from', '=', $user->data()->id)
         ), 'id', 'desc limit 5');
         foreach($transactionsTo->results() as $to){
-            $toUser = $this->model('User');
+            $toUser = Model::get('User');
             $toUser->find($to->T_to);
 
             $toTransactions[] = array(
@@ -29,11 +32,11 @@ class Centrobank extends Controller
             );
         }
 
-        $transactionsFrom = Database::getInstance()->get("transactions", array(
+        $transactionsFrom = $this->_db->get("transactions", array(
             array('T_to', '=', $user->data()->id)
         ), 'id', 'desc limit 5');
         foreach($transactionsFrom->results() as $from){
-            $fromUser = $this->model('User');
+            $fromUser = Model::get('User');
             $fromUser->find($from->T_from);
 
             $fromTransactions[] = array(
@@ -43,11 +46,11 @@ class Centrobank extends Controller
             );
         }
 
-        $outGoing = Database::getInstance()->countAll("transactions", array(
+        $outGoing = $this->_db->countAll("transactions", array(
             'T_amount' => 'money',
         ), "where T_from = ".$user->data()->id);
 
-        $inComing = Database::getInstance()->countAll("transactions", array(
+        $inComing = $this->_db->countAll("transactions", array(
             'T_amount' => 'money',
         ), "where T_to = ".$user->data()->id);
 
@@ -98,7 +101,7 @@ class Centrobank extends Controller
     {
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
-                $user = $this->model('User');
+                $user = Model::get('User');
                 if($user->getTimer('bank') <= time()){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
@@ -136,7 +139,7 @@ class Centrobank extends Controller
     {
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
-                $user = $this->model('User');
+                $user = Model::get('User');
                 if($user->getTimer('bank') > time()){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
@@ -176,8 +179,8 @@ class Centrobank extends Controller
     {
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
-                $user = $this->model('User');
-                $recipient = $this->model('User');
+                $user = Model::get('User');
+                $recipient = Model::get('User');
                 $recipient->find(Input::get('recipient'));
                 if($recipient && $user->data()->id !== $recipient->data()->id){
                     $validate = new Validate();
@@ -203,7 +206,7 @@ class Centrobank extends Controller
                         $recipient->set(array(
                             "GS_cash" => $user->stats()->GS_cash + $amount
                         ));
-                        Database::getInstance()->insert("transactions", array(
+                        $this->_db->insert("transactions", array(
                             "T_from"    => $user->data()->id,
                             "T_to"      => $recipient->data()->id,
                             "T_amount"  => Input::get('amount'),

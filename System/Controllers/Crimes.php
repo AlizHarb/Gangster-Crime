@@ -3,28 +3,44 @@
 
 class Crimes extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, true, true);
     }
 
     public function index()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
 
         $crimes = array();
-        $crime = Database::getInstance()->get("crimes", array(
+        $crime = $this->_db->get("crimes", array(
             array('id', '>', 0)
         ));
         foreach($crime->results() as $crime){
             $crimePerc = explode('-', $user->stats()->GS_crimes);
 
+            if($crime->id > 1){
+                $previous = $this->_db->get("crimes", array(
+                    array('id', '=',$crime->id-1)
+                ));
+                $previous = $previous->first();
+
+                $previousPerc = $crimePerc[($previous->id - 1)];
+            }else{
+                $previousPerc = 100;
+            }
+
             $crimes[] = array(
                 "crimes"    => $crime,
-                "perc"      => $crimePerc[($crime->id - 1)]
+                "perc"      => $crimePerc[($crime->id - 1)],
+                "previous"  => $previousPerc
             );
         }
+
         $this->view('crimes', array(
             "crimes" => $crimes
         ));
@@ -34,22 +50,29 @@ class Crimes extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $user = $this->model('User');
-                $crime = Database::getInstance()->get('crimes', array(
+                $user = Model::get('User');
+                $crime = $this->_db->get('crimes', array(
                     array('id', '=', Input::get('crime'))
                 ));
                 $crime = $crime->first();
-                $nextRank = Database::getInstance()->get("ranks", array(
-                    array("id", '=', $user->stats()->GS_rank+1)
-                ));
-                $nextRank = $nextRank->first();
+                $userCrimeChance = explode('-', $user->stats()->GS_crimes);
+                if($crime->id > 1){
+                    $previous = $this->_db->get("crimes", array(
+                        array('id', '=',$crime->id-1)
+                    ));
+                    $previous = $previous->first();
+
+                    $previous = $userCrimeChance[($previous->id - 1)];
+                }else{
+                    $previous = 100;
+                }
+
                 $chance = mt_rand(1, 100);
                 $jailChance = mt_rand(1, 3);
-                $userCrimeChance = explode('-', $user->stats()->GS_crimes);
                 $userChance = $userCrimeChance[($crime->id - 1)];
                 $cashReward = mt_rand($crime->C_minMoney, $crime->C_maxMoney);
 
-                if($crime->C_rank <= $user->stats()->GS_rank){
+                if($previous == 100){
                     if($user->getTimer('crime') <= time()){
                         $user->setTimer('crime', $crime->C_time);
                         if ($chance > $userChance && $jailChance == 1) {
@@ -69,7 +92,7 @@ class Crimes extends Controller
                                 "GS_cash"   => $user->stats()->GS_cash + $cashReward,
                                 "GS_exp"    => $user->stats()->GS_exp + $crime->C_exp
                             ));
-                            $items = Database::getInstance()->get("items", array(
+                            $items = $this->_db->get("items", array(
                                 array("id", '>=', 1),
                                 array("id", '<=', 18)
                             ));
@@ -88,6 +111,19 @@ class Crimes extends Controller
                             }
                             $add = 2;
                         }
+                        if($userCrimeChance[($crime->id-1)] == 99 && $add > 0){
+                            $mail = Model::get('Mail');
+                            $next = $this->_db->get("crimes", array(
+                                array('id', '=',$crime->id+1)
+                            ));
+                            $next = $next->first();
+                            $mail->create(array(
+                                "M_toUser"      => $user->data()->id,
+                                "M_fromUser"    => 0,
+                                "M_text"        => "You have unlocked a new crime. <b>".$next->C_name."</b>.",
+                                "M_date"        => date('Y-m-d H:i:s')
+                            ));
+                        }
                         $userCrimeChance[($crime->id-1)] = $userCrimeChance[($crime->id-1)] + $add;
 
                         if ($userCrimeChance[($crime->id-1)] > 100) {
@@ -102,7 +138,7 @@ class Crimes extends Controller
                         //Session::flash('error', "You have to wait.");
                     }
                 }else{
-                    Session::flash('error', 'You have to be '.$nextRank->R_name.' to do the crime.');
+                    Session::flash('error', 'You can not commit this crime yet.');
                 }
                 Redirect::to('/crimes');
             }

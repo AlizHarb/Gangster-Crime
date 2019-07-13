@@ -1,22 +1,25 @@
 <?php
 
 
-    class Inventory extends Controller
+class Inventory extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, true, true);
     }
 
     public function index()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
 
         $items = array();
         foreach(explode('-', $user->stats()->GS_items) as $key => $item){
             if($item > 0){
-                $itemsQuery = Database::getInstance()->get("items", array(
+                $itemsQuery = $this->_db->get("items", array(
                     array('id', '=', $key + 1)
                 ));
                 if($itemsQuery->count()){

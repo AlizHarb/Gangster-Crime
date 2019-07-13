@@ -3,23 +3,26 @@
 
 class Prison extends Controller
 {
+    private $_db;
 
     public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, false, true);
     }
 
     public function index()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
 
         $prisoners = array();
-        $prison = Database::getInstance()->get("gangstersTimer", array(
+        $prison = $this->_db->get("gangstersTimer", array(
             array('GT_name', '=', "prison"),
             array('GT_time', '>=', time())
         ));
         foreach($prison->results() as $prison){
-            $userPrison = $this->model('User');
+            $userPrison = Model::get('User');
             $userPrison->find($prison->id);
 
             if($userPrison->stats()->GS_location == $user->stats()->GS_location){
@@ -31,11 +34,11 @@ class Prison extends Controller
         }
 
         $buster = array();
-        $busters = Database::getInstance()->get("gangstersStats", array(
+        $busters = $this->_db->get("gangstersStats", array(
             array("GS_prisonSuccess", ">", 0)
         ), 'GS_prisonSuccess', 'desc limit 5');
         foreach($busters->results() as $bust){
-            $userPrison = $this->model('User');
+            $userPrison = Model::get('User');
             $userPrison->find($bust->id);
 
             $buster[] = array(
@@ -53,14 +56,14 @@ class Prison extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $time = Database::getInstance()->get("gangstersTimer", array(
+                $time = $this->_db->get("gangstersTimer", array(
                     array('id', '=', Input::get('prisoner')),
                     array('GT_time', '>=', time())
                 ));
                 $time = $time->first();
-                $user = $this->model('User');
-                $mail = $this->model('Mail');
-                $userInfo = $this->model('User');
+                $user = Model::get('User');
+                $mail = Model::get('Mail');
+                $userInfo = Model::get('User');
                 $userInfo->find(Input::get('prisoner'));
                 if($time->GT_time >= time()){
                     if($user->getTimer('prison') <= time()){
@@ -115,7 +118,7 @@ class Prison extends Controller
 
     public function bribe()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
         if(Input::exists()){
             if(Token::check(Input::get('token'))) {
                 if($user->stats()->GS_bribe > 0){
@@ -138,7 +141,7 @@ class Prison extends Controller
 
     public function reward()
     {
-        $user = $this->model('User');
+        $user = Model::get('User');
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
                 $validate = new Validate();

@@ -1,7 +1,7 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/healthcare/header_healthcare.jpg" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/healthcare/header_healthcare.jpg" class="img-fluid">
 </div>
 <div class="game-body">
     <div class="game-header">Kirovska Insurances, Moscow Branch.</div>
@@ -26,7 +26,7 @@
                 <p class="font-weight-bold text-white">Basic Plan</p>
                 <p class="small">150,000 Plan includes 5% per hour healthcare service.</p>
                 {% if user.getHospital().H_plan == 0 %}
-                <form method="post" action="{{ base_url }}healthcare/plan" class="text-center">
+                <form method="post" action="{{ settings.get('website_url') }}healthcare/plan" class="text-center">
                     <input type="hidden" name="plan" value="1">
                     <input type="hidden" name="token" value="{{ token }}">
                     <button class="btn btn-dark m-0">Purchase Plan</button>
@@ -39,7 +39,7 @@
                 <p class="font-weight-bold text-white">Premium Plan</p>
                 <p class="small">240,000 Plan includes 10% per hour healthcare service.</p>
                 {% if user.getHospital().H_plan == 0 %}
-                <form method="post" action="{{ base_url }}healthcare/plan" class="text-center">
+                <form method="post" action="{{ settings.get('website_url') }}healthcare/plan" class="text-center">
                     <input type="hidden" name="plan" value="2">
                     <input type="hidden" name="token" value="{{ token }}">
                     <button class="btn btn-dark m-0">Purchase Plan</button>
@@ -52,7 +52,7 @@
                 <p class="font-weight-bold text-white">Instant Health!</p>
                 <p class="small">10 credits per 10% health increase. No hospital check-in is required.</p>
                 {% if user.getHospital().H_plan == 0 %}
-                <form method="post" action="{{ base_url }}healthcare/plan" class="text-center">
+                <form method="post" action="{{ settings.get('website_url') }}healthcare/plan" class="text-center">
                     <input type="hidden" name="plan" value="3">
                     <input type="hidden" name="token" value="{{ token }}">
                     <button class="btn btn-dark m-0">Purchase Plan</button>
@@ -69,7 +69,7 @@
             <div class="game-box">
                 {% if user.getTimer('hospital') <= time %}
                     <p class="small">Select how many hours you would like to check into the Hospital. While you are in the Hospital, you cannot travel, gamble or use most game & money features.</p>
-                    <form method="post" action="{{ base_url }}healthcare/checkin">
+                    <form method="post" action="{{ settings.get('website_url') }}healthcare/checkin">
                         <div class="form-group mb-0">
                             <div class="row">
                                 <div class="col-2 col-md-2">
@@ -114,7 +114,7 @@
         </div>
         <div class="d-none d-md-block col-md-6">
             <div class="page-img">
-                <img src="{{ base_url }}public/assets/img/pages/healthcare/hospitalbeds.jpg" class="img-fluid">
+                <img src="{{ settings.get('website_url') }}public/assets/img/pages/healthcare/hospitalbeds.jpg" class="img-fluid">
             </div>
         </div>
     </div>

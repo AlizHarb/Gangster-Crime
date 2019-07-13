@@ -3,16 +3,19 @@
 
 class Messaging extends Controller
 {
+    private $_db;
 
-    public function __construct($login = true, $jail = false, $hospital = false)
+    public function __construct()
     {
+        $this->_db = Database::getInstance();
+
         parent::__construct(true, false, false);
     }
 
     public function index()
     {
-        $user = $this->model('User');
-        $mail = $this->model('Mail');
+        $user = Model::get('User');
+        $mail = Model::get('Mail');
 
         $mail->update("M_read = 0 and M_toUser = ".$user->data()->id, array(
             "M_read" => 1
@@ -20,7 +23,7 @@ class Messaging extends Controller
 
         $count = 0;
         $messages = array();
-        $messaging = Database::getInstance()->get("mail", array(
+        $messaging = $this->_db->get("mail", array(
             array("M_toUser", "=", $user->data()->id),
             array('M_saved', "<>", 1)
         ), "M_date", "desc limit 200");
@@ -28,9 +31,12 @@ class Messaging extends Controller
             $count = $messaging->count();
             $messaging = $messaging->results();
             foreach($messaging as $message){
-                $userInfo = $this->model('User');
+                $userInfo = Model::get('User');
                 if($message->M_fromUser == 0){
                     $userInfo->find(0);
+                    $userInfo->data()->profile = "System";
+                    $userInfo->data()->name = "System";
+                    $userInfo->data()->avatar = "public/assets/img/avatar_small.jpg";
                 }else{
                     $userInfo->find($message->M_fromUser);
                 }
@@ -48,10 +54,50 @@ class Messaging extends Controller
         ));
     }
 
+    public function saved()
+    {
+        $user = Model::get('User');
+
+        $count = 0;
+        $messages = array();
+        $messaging = $this->_db->get("mail", array(
+            array("M_toUser", "=", $user->data()->id),
+            array('M_saved', "=", 1)
+        ), "M_date", "desc limit 200");
+        if($messaging->count()){
+            $count = $messaging->count();
+            $messaging = $messaging->results();
+            foreach($messaging as $message){
+                $userInfo = Model::get('User');
+                if($message->M_fromUser == 0){
+                    $userInfo->find(0);
+                    $userInfo->data()->profile = "System";
+                    $userInfo->data()->name = "System";
+                    $userInfo->data()->avatar = "public/assets/img/avatar_small.jpg";
+                }else{
+                    $userInfo->find($message->M_fromUser);
+                }
+
+                $messages[] = array(
+                    "from"      => $userInfo,
+                    "message"   => $message
+                );
+            }
+            if(Input::get('get')){
+                die('hi');
+            }
+        }
+
+        $this->view('messaging/main' ,array(
+            'messages'  => $messages,
+            'count'     => $count
+        ));
+    }
+
     public function newMessage($message = null)
     {
         if($message) {
-            $user = $this->model('User');
+            $user = Model::get('User');
             $user->find($message->M_fromUser);
             $this->view('messaging/send', array(
                 "message" => $message,
@@ -66,10 +112,10 @@ class Messaging extends Controller
     {
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
-                $user = $this->model('User');
-                $userTo = $this->model('User');
+                $user = Model::get('User');
+                $userTo = Model::get('User');
                 $userTo->find(Input::get('recipient'));
-                $mail = $this->model('Mail');
+                $mail = Model::get('Mail');
                 if($userTo && $user->data()->id !== $userTo->data()->id){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
@@ -109,9 +155,9 @@ class Messaging extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $user = $this->model('User');
-                $mail = $this->model('Mail');
-                $message = Database::getInstance()->get("mail", array(
+                $user = Model::get('User');
+                $mail = Model::get('Mail');
+                $message = $this->_db->get("mail", array(
                     array('id', '=', Input::get('message')),
                     array('M_toUser', '=', $user->data()->id),
                 ));

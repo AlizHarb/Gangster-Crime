@@ -4,7 +4,7 @@
         {% if loginError %}
             <div class="alert alert-danger">{{ loginError }}</div>
         {% endif %}
-        <form method="post" action="{{ base_url }}auth/login">
+        <form method="post" action="{{ settings.get('website_url') }}auth/login">
             <input class="form-control" type="text" name="gangster_username" placeholder="Gangster Name" autocomplete="off">
             <input class="form-control" type="password" name="gangster_password" placeholder="Gangster Password" autocomplete="off">
             <input type="hidden" name="token" value="{{ token }}">

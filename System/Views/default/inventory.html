@@ -1,12 +1,12 @@
 {% extends 'default/layouts/loggedin.html' %}
 {% block body %}
 <ul class="game-tabs">
-    <li class="tab-item active"><a href="{{ base_url }}inventory" class="tab-link">Inventory</a></li>
-    <li class="tab-item"><a href="{{ base_url }}smuggling" class="tab-link">Smuggling</a></li>
+    <li class="tab-item active"><a href="{{ settings.get('website_url') }}inventory" class="tab-link">Inventory</a></li>
+    <li class="tab-item"><a href="{{ settings.get('website_url') }}smuggling" class="tab-link">Smuggling</a></li>
 </ul>
 
 <div class="page-img d-none d-md-block">
-    <img src="{{ base_url }}public/assets/img/pages/inventory/header_smuggling.png" class="img-fluid">
+    <img src="{{ settings.get('website_url') }}public/assets/img/pages/inventory/header_smuggling.png" class="img-fluid">
 </div>
 
 <div class="game-body">

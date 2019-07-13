@@ -34,8 +34,7 @@ class Mail
 
     public function checkMail()
     {
-        require_once("User.php");
-        $user = new User();
+        $user = Model::get('User');
 
         $mail = $this->_db->get("mail", array(
             array('M_toUser', '=', $user->data()->id),
