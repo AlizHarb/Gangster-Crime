@@ -11,16 +11,16 @@ class Controller
 
         $user = Model::get('User');
         if($login && !$user->isLoggedIn()){
-            Redirect::to('/');
+            Redirect::to('auth');
         }
         if(!$login && $user->isLoggedIn()){
-            Redirect::to('/home');
+            Redirect::to('home');
         }
-        if($jail && $user->getTimer('prison') >= time()){
-            Redirect::to('/prison');
+        if($jail && $user->timer('prison') >= time()){
+            Redirect::to('prison');
         }
-        if($hospital && $user->getTimer('hospital') >= time()){
-            Redirect::to('/healthcare');
+        if($hospital && $user->timer('hospital') >= time()){
+            Redirect::to('healthcare');
         }
     }
 
@@ -28,14 +28,15 @@ class Controller
     {
         $settings = Model::get('Settings');
         $theme = $settings::get('website_theme');
-        if(file_exists("System/Views/".$theme)){
+        if(file_exists("Public/Views/".$theme)){
             $loader = new Twig_Loader_Filesystem(Config::get('template/template_dir'));
             $twig = new Twig_Environment($loader, array(
                 'cache' => Config::get('template/cache'),
             ));
+            require_once('System/Config/Menus.php');
             require_once('System/Config/Globals.php');
 
-            echo $twig->render($theme.'/'.$view.'.html', $data);
+            echo $twig->render($theme.'/pages/'.$view.'.tpl', $data);
         }else{
             echo "<h1>The {$theme} theme is not exist in Views directory.</h1>";
         }

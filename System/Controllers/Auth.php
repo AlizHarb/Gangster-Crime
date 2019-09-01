@@ -11,15 +11,15 @@ class Auth extends Controller
 
     public function index(){
         if(Session::exists('loginError')) {
-            $this->view("auth", array(
+            $this->view("auth/main", array(
                 "loginError" => Session::flash('loginError')
             ));
         }elseif(Session::exists('registerError')) {
-            $this->view("auth", array(
+            $this->view("auth/main", array(
                 "registerError" => Session::flash('registerError')
             ));
         }else{
-            $this->view("auth");
+            $this->view("auth/main");
         }
     }
 
@@ -69,7 +69,7 @@ class Auth extends Controller
                         ));
                         //Session::flash('registerSuccess','You have been registered and can now log in');
                         $user->login(Input::get('G_name'), Hash::make(Input::get('password'), $salt));
-                        Redirect::to('/home');
+                        Redirect::to('home');
                     } catch (Exception $e) {
                         die($e->getMessage());
                     }
@@ -79,10 +79,11 @@ class Auth extends Controller
                         $err = $error;
                     }
                     Session::flash('registerError', $err);
-                    Redirect::to('/');
+                    Redirect::to('auth');
                 }
             }
         }
+        Redirect::to('auth');
     }
 
     public function login()
@@ -104,10 +105,10 @@ class Auth extends Controller
                     $user 		= Model::get('User');
                     $login 		= $user->login(Input::get('gangster_username'), Input::get('gangster_password'));
                     if ($login) {
-                        Redirect::to('/home');
+                        Redirect::to('home');
                     } else {
                         Session::flash('loginError','Sorry we could not log you in.');
-                        Redirect::to('/');
+                        Redirect::to('auth');
                     }
                 } else {
                     $err = array();
@@ -115,9 +116,10 @@ class Auth extends Controller
                         $err = $error;
                     }
                     Session::flash('loginError', $err);
-                    Redirect::to('/');
+                    Redirect::to('auth');
                 }
             }
         }
+        Redirect::to('auth');
     }
 }

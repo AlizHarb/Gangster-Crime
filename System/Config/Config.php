@@ -13,7 +13,7 @@ $GLOBALS['config'] = array(
         'sessionTime'   => 3600
     ),
     'template' => array(
-        'template_dir' => 'System/Views',
+        'template_dir' => 'Public/Views',
         'cache' => false
     )
 );

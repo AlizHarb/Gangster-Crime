@@ -15,36 +15,7 @@ class Centrobank extends Controller
     public function index()
     {
         $user = Model::get('User');
-        $toTransactions = array();
-        $fromTransactions = array();
-
-        $transactionsTo = $this->_db->get("transactions", array(
-            array('T_from', '=', $user->data()->id)
-        ), 'id', 'desc limit 5');
-        foreach($transactionsTo->results() as $to){
-            $toUser = Model::get('User');
-            $toUser->find($to->T_to);
-
-            $toTransactions[] = array(
-                "amount" => $to->T_amount,
-                "date"   => $to->T_date,
-                "user"   => $toUser
-            );
-        }
-
-        $transactionsFrom = $this->_db->get("transactions", array(
-            array('T_to', '=', $user->data()->id)
-        ), 'id', 'desc limit 5');
-        foreach($transactionsFrom->results() as $from){
-            $fromUser = Model::get('User');
-            $fromUser->find($from->T_from);
-
-            $fromTransactions[] = array(
-                "amount" => $from->T_amount,
-                "date"   => $from->T_date,
-                "user"   => $fromUser
-            );
-        }
+        $bank = Model::get('Bank');
 
         $outGoing = $this->_db->countAll("transactions", array(
             'T_amount' => 'money',
@@ -54,9 +25,9 @@ class Centrobank extends Controller
             'T_amount' => 'money',
         ), "where T_to = ".$user->data()->id);
 
-        $this->view('centrobank/centrobank',array(
-            "toTransaction"     => $toTransactions,
-            'fromTransaction'   => $fromTransactions,
+        $this->view('bank/main',array(
+            "toTransaction"     => $bank->toUser($user->data()->id),
+            'fromTransaction'   => $bank->fromUser($user->data()->id),
             'outGoing'          => $outGoing,
             'inComing'          => $inComing
         ));
@@ -92,9 +63,9 @@ class Centrobank extends Controller
                     }
                     Session::flash('error', $err);
                 }
-                Redirect::to('/centrobank');
             }
         }
+        Redirect::to('centrobank');
     }
 
     public function deposit()
@@ -102,7 +73,7 @@ class Centrobank extends Controller
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
                 $user = Model::get('User');
-                if($user->getTimer('bank') <= time()){
+                if($user->timer('bank') <= time()){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
                         'cash'	=> array(
@@ -119,7 +90,7 @@ class Centrobank extends Controller
                             "GS_bank" => Input::get('cash'),
                             "GS_cash" => $user->stats()->GS_cash - Input::get('cash'),
                         ));
-                        $user->setTimer('bank', 24*60*60);
+                        $user->timer('bank', 24*60*60);
                     }else{
                         $err = array();
                         foreach ($validation->errors() as $error) {
@@ -130,9 +101,9 @@ class Centrobank extends Controller
                 }else{
                     Session::flash('error', 'You have already put some money in the bank!');
                 }
-                Redirect::to('/centrobank');
             }
         }
+        Redirect::to('centrobank');
     }
 
     public function withdraw()
@@ -140,7 +111,7 @@ class Centrobank extends Controller
         if(Input::exists()) {
             if (Token::check(Input::get('token'))) {
                 $user = Model::get('User');
-                if($user->getTimer('bank') > time()){
+                if($user->timer('bank') > time()){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
                         'cash'	=> array(
@@ -154,7 +125,7 @@ class Centrobank extends Controller
                     if($validation->passed()){
                         Session::flash('success', 'You withdrew $'.number_format(Input::get('cash')).' from your Bank Account.');
                         if(Input::get('cash') >= $user->stats()->GS_bank){
-                            $user->setTimer('bank', 0);
+                            $user->timer('bank', 0);
                         }
                         $user->set(array(
                             "GS_bank" => $user->stats()->GS_bank - Input::get('cash'),
@@ -170,9 +141,9 @@ class Centrobank extends Controller
                 }else{
                     Session::flash('error', 'You do not have money in the bank!');
                 }
-                Redirect::to('/centrobank');
             }
         }
+        Redirect::to('centrobank');
     }
 
     public function transfer()
@@ -182,6 +153,7 @@ class Centrobank extends Controller
                 $user = Model::get('User');
                 $recipient = Model::get('User');
                 $recipient->find(Input::get('recipient'));
+                $bank = Model::get('Bank');
                 if($recipient && $user->data()->id !== $recipient->data()->id){
                     $validate = new Validate();
                     $validation = $validate->check($_POST, array(
@@ -206,7 +178,7 @@ class Centrobank extends Controller
                         $recipient->set(array(
                             "GS_cash" => $user->stats()->GS_cash + $amount
                         ));
-                        $this->_db->insert("transactions", array(
+                        $bank->create(array(
                             "T_from"    => $user->data()->id,
                             "T_to"      => $recipient->data()->id,
                             "T_amount"  => Input::get('amount'),
@@ -222,9 +194,8 @@ class Centrobank extends Controller
                 }else{
                     Session::flash('error', 'The user you are trying to transfer money to is not exist.');
                 }
-
-                Redirect::to('/centrobank');
             }
         }
+        Redirect::to('centrobank');
     }
 }

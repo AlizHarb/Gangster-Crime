@@ -6,7 +6,6 @@ class User
 
     private $_db,
             $_data,
-            $_stats,
             $_sessionName,
             $_isLoggedIn;
 
@@ -20,13 +19,7 @@ class User
                 $user = Session::get($this->_sessionName);
                 if ($this->find($user)) {
                     $this->_isLoggedIn = true;
-                    $this->checkSession();
-                    $this->checkRank();
-                    $this->checkBank();
-                    $this->checkHospital();
-
-                    $car = Model::get('Car');
-                    $car->checkUserCars($this->data()->id);
+                    $this->bank();
                 } else {
                     self::logout();
                 }
@@ -43,10 +36,10 @@ class User
         }
     }
 
-    public function set($field)
+    public function set($fields = array())
     {
-        if(!$this->_db->update("gangstersStats", "id = ".$this->data()->id, $field)){
-            throw new Exception("There was a problem updating the data.");
+        if (!$this->_db->update('gangstersStats', 'id='.$this->data()->id, $fields)) {
+            throw new Exception("There was a problem updating the user stats");
         }
     }
 
@@ -60,87 +53,29 @@ class User
             if ($data->count()) {
                 $this->_data = $data->first();
 
-                $stats 	= $this->_db->get('gangstersStats', array(
-                    array("id", '=', $this->data()->id)
-                ));
-                if($stats->count()){
-                    $this->_stats = $stats->first();
-                }else{
-                    $this->_db->insert('gangstersStats', array(
-                        "id" => $this->data()->id
-                    ));
-                }
+                $expIntoNextRank =  $this->stats()->GS_exp - $this->rank()->R_fromExp;
+                $nextRank = Model::get('Rank');
+                $nextRank->find($this->stats()->GS_rank+1);
+                $expNeededForNextRank = $nextRank->data()->R_fromExp - $this->rank()->R_fromExp;
 
-                $nextRank = $this->_db->get("ranks", array(
-                    array("id", '=', $this->stats()->GS_rank+1)
-                ));
-                $nextRank = $nextRank->first();
-                $expIntoNextRank =  $this->stats()->GS_exp - $this->getRank()->R_fromExp;
-                $expNeededForNextRank = $nextRank->R_fromExp - $this->getRank()->R_fromExp;
-                $this->data()->expPerc = round($expIntoNextRank / $expNeededForNextRank * 100, 2);
+                $maxHealth = $this->rank()->R_health;
 
-                $maxHealth = $this->getRank()->R_health;
-                $this->data()->health = ($maxHealth - $this->stats()->GS_health) / $maxHealth * 100;
-                if ($this->data()->health < 0) $this->data()->health = 0;
-
-                $this->data()->hospitalTime = $this->getHospital()->H_planTime * 1000;
-
-                if($this->stats()->GS_crew == 0){
-                    $this->data()->crew = "Crewless";
-                }else{
-                    $crew = Model::get('Crew');
-                    $crew->find($this->stats()->GS_crew);
-
-                    $this->data()->crew = $crew->data()->C_name;
-                }
-                $this->data()->profile = "<a class='' href='profile/".$this->data()->G_name."'>".$this->data()->G_name."</a>";
                 $this->data()->name = $this->data()->G_name;
-                $this->data()->avatar = $this->data()->G_avatar;
+                $this->data()->user = '<a>'.$this->data()->G_name.'</a>';
+                $this->data()->rank = $this->rank()->R_name;
+                $this->data()->exp = round($expIntoNextRank / $expNeededForNextRank * 100, 2);
+                $this->data()->health = ($maxHealth - $this->stats()->GS_health) / $maxHealth * 100;
+                $this->data()->cash = $this->stats()->GS_cash;
+                $this->data()->bullets = $this->stats()->GS_bullets;
+                $this->data()->credits = $this->stats()->GS_credits;
+                $this->data()->location = $this->location()->L_name;
+                $this->data()->crew = "Crewless";
 
+                if ($this->data()->health < 0) $this->data()->health = 0;
                 return true;
             }
         }
         return false;
-    }
-
-    public function getTimer($name)
-    {
-        $timer = $this->_db->get("gangstersTimer", array(
-            array('id' ,'=', $this->data()->id)
-        ));
-        $timer = $timer->results();
-        foreach($timer as $time){
-            if($time->GT_name == $name){
-                return $time->GT_time;
-            }
-        }
-    }
-
-    public function convertTimer($name)
-    {
-        $timer = $this->_db->get("gangstersTimer", array(
-            array('id' ,'=', $this->data()->id)
-        ));
-        $timer = $timer->results();
-        foreach($timer as $time){
-            if($time->GT_name == $name){
-                return $time->GT_time * 1000;
-            }
-        }
-    }
-
-    public function setTimer($name, $time)
-    {
-        if($this->getTimer($name) == 0){
-            $this->_db->insert('gangstersTimer', array(
-                "id"        => $this->data()->id,
-                "GT_name"   => $name,
-                "GT_time"   => 0
-            ));
-        }
-        if(!$this->_db->update("gangstersTimer", "id = ".$this->data()->id." AND GT_name = '{$name}'", array("GT_time" => (time() + $time)))){
-            throw new Exception("There was a problem updating the data.");
-        }
     }
 
     public function login($username = null, $password = null)
@@ -152,17 +87,6 @@ class User
             if ($user) {
                 if ($this->data()->G_password === Hash::make($password, $this->data()->G_salt)) {
                     Session::put($this->_sessionName, $this->data()->id);
-                    $hash = Hash::unique();
-                    $hashCheck = $this->_db->get('gangstersSessions', array(
-                        array('user','=',$this->data()->id)
-                    ));
-                    if (!$hashCheck->count()) {
-                        $this->_db->insert('gangstersSessions', array(
-                            'user' => $this->data()->id,
-                            'hash' => $hash,
-                            'time' => time()+Config::get('session/sessionTime')
-                        ));
-                    }
                     return true;
                 }
             }
@@ -170,28 +94,79 @@ class User
         return false;
     }
 
-    public function checkSession()
+    public function logout()
     {
-        $session = $this->_db->get('gangstersSessions', array(
-            array('user','=',$this->data()->id)
-        ));
-        if($session->count()){
-            $session = $session->first();
-            if($session->time <= time()){
-                self::logout();
-            }else{
-                $this->_db->update('gangstersSessions', 'user='.$this->data()->id, array(
-                    'time' => time()+Config::get('session/sessionTime')
-                ));
-            }
+        Session::delete($this->_sessionName);
+    }
+
+    public function location()
+    {
+        $location = Model::get('Location');
+        if($location->find($this->stats()->GS_location)){
+            $location->find($this->stats()->GS_location);
+            return $location->data();
+        }else{
+            $this->set(array(
+                "GS_location"   => 1
+            ));
+            return self::location();
         }
     }
 
-    public function checkBank()
+    public function rank()
     {
+        $rank = Model::get('Rank');
+        $next = Model::get('Rank');
         $mail = Model::get('Mail');
 
-        if($this->getTimer('bank') <= time() && $this->stats()->GS_bank > 0){
+        if($rank->find($this->stats()->GS_rank)){
+            $rank->find($this->stats()->GS_rank);
+            if($rank->check($this->stats()->GS_rank, $this->stats()->GS_exp)){
+                $this->set(array(
+                    "GS_rank"   => $this->stats()->GS_rank + 1
+                ));
+                $next->find($this->stats()->GS_rank+1);
+                $mail->create(array(
+                    "M_toUser"      => $this->data()->id,
+                    "M_fromUser"    => 0,
+                    "M_text"        => "You have been promoted to <b>".$next->data()->R_name."</b>. Keep up the good work!",
+                    "M_date"        => date('Y-m-d H:i:s')
+                ));
+            }
+            return $rank->data();
+        }else{
+            $this->set(array(
+                "GS_rank"   => 1,
+                "GS_exp"    => 0
+            ));
+            return self::rank();
+        }
+    }
+
+    public function timer($name, $update = null)
+    {
+        $timer = Model::get('Timer');
+        if($timer->find($this->data()->id, $name)){
+            if(isset($update)){
+                $timer->update('id='.$this->data()->id.' and GT_name="'.$name.'"', array(
+                    "GT_time"   => time()+$update
+                ));
+            }
+            return $timer->find($this->data()->id, $name)->GT_time;
+        }else{
+            $timer->create(array(
+                "id"        => $this->data()->id,
+                "GT_name"   => $name,
+                "GT_time"   => 0
+            ));
+            return self::timer($name);
+        }
+    }
+
+    public function bank()
+    {
+        $mail = Model::get('Mail');
+        if($this->timer('bank') <= time() && $this->stats()->GS_bank > 0){
             $interest = ($this->stats()->GS_bank < 1000000000 ? $interest = 0.30 : $interest = 0.01);
             if($interest == 0.30){
                 $interestMsg = 3;
@@ -211,121 +186,28 @@ class User
                                     Thank you for using Centro Bank.",
                 "M_date"        => date('Y-m-d H:i:s')
             ));
-            $this->setTimer('bank', 0);
+            $this->timer('bank', 0);
         }
     }
 
-    public function checkRank()
+    public function stats()
     {
-        $mail = Model::get('Mail');
-
-        $nextRank = $this->_db->get("ranks", array(
-            array("id", '=', $this->stats()->GS_rank+1)
+        $stats = $this->_db->get("gangstersStats", array(
+            array('id', '=', $this->data()->id)
         ));
-        $nextRank = $nextRank->first();
-        if($this->stats()->GS_exp >= $nextRank->R_fromExp){
-            $this->set(array(
-                'GS_rank' => $this->stats()->GS_rank + 1
-            ));
-            $mail->create(array(
-                "M_toUser"      => $this->data()->id,
-                "M_fromUser"    => 0,
-                "M_text"        => "You have been promoted to <b>".$nextRank->R_name."</b>. Keep up the good work!",
-                "M_date"        => date('Y-m-d H:i:s')
-            ));
-        }
-    }
-
-    public function getRank()
-    {
-        $rank = $this->_db->get("ranks", array(
-            array("id", '=', $this->stats()->GS_rank)
-        ));
-        return $rank->first();
-    }
-
-    public function setHospital($fields = array())
-    {
-        if(!$this->_db->update("healthcare", "H_user = ".$this->data()->id, $fields)){
-            throw new Exception("There was a problem updating the data");
-        }
-    }
-
-    public function getHospital()
-    {
-        $hospital = $this->_db->get("healthcare", array(
-            array('H_user', '=', $this->data()->id)
-        ));
-        if($hospital->count()){
-            return $hospital->first();
+        if($stats->count()){
+            return $stats->first();
         }else{
-            $this->_db->insert("healthcare", array(
-                "H_user"     => $this->data()->id,
-                "H_plan"     => 3,
-                "H_planTime" => (time()+(7*24*60*60))
+            $this->_db->insert('gangstersStats', array(
+                "id"    => $this->data()->id
             ));
+            return self::stats();
         }
-        return false;
-    }
-
-    public function checkHospital()
-    {
-        if($this->getHospital()->H_planTime <= time()){
-            $this->_db->update("healthcare", "H_user = ".$this->data()->id, array(
-               "H_plan" => 0
-            ));
-            return true;
-        }
-        if(($this->getTimer('hospital') <= time()) && $this->getHospital()->H_plan <= 3){
-            if($this->getHospital()->H_plan == 1){
-                $parentage = 5;
-            }elseif($this->getHospital()->H_plan == 3){
-                $parentage = 10;
-            }else{
-                $parentage = 8;
-            }
-            $increaseHealth = ($this->getRank()->R_health * ($this->stats()->GS_hospitalHours * ($parentage / 100)));
-            $increaseHealth = $this->stats()->GS_health - $increaseHealth;
-            if($increaseHealth < 0)
-                $increaseHealth = 0;
-
-            $this->set(array(
-                "GS_health"         => $increaseHealth,
-                "GS_hospitalHours"    => 0
-            ));
-        }/*elseif($this->getHospital()->H_plan == 4 && $this->stats()->GS_health < 100){
-            $increaseHealth = ($this->getRank()->R_health * ($this->stats()->GS_hospitalHours * 0.10));
-            $increaseHealth = $this->stats()->GS_health - $increaseHealth;
-            if($increaseHealth < 0)
-                $increaseHealth = 0;
-
-            $this->set(array(
-                "GS_health" => $increaseHealth
-            ));
-        }*/
-    }
-
-    public function logout()
-    {
-        $this->_db->delete('gangstersSessions', array(
-            array('user', '=', $this->data()->id)
-        ));
-        Session::delete($this->_sessionName);
-    }
-
-    public function exists()
-    {
-        return (!empty($this->_data)) ? true : false;
     }
 
     public function data()
     {
         return $this->_data;
-    }
-
-    public function stats()
-    {
-        return $this->_stats;
     }
 
     public function isLoggedIn()

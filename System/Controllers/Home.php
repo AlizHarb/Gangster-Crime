@@ -9,12 +9,12 @@ class Home extends Controller
     {
         $this->_db = Database::getInstance();
 
-        parent::__construct(true, false, false);
+        parent::__construct(true, false, false, "Game");
     }
 
     public function index()
     {
-        $this->view('home');
+        $this->view('home/main');
     }
 
     public function logout()

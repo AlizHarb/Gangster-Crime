@@ -1,0 +1,357 @@
+*{
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+html ,body {
+    height: 100%;
+}
+body{
+    color: #ffffff;
+    font-size: 13px;
+}
+a:link, a:active, a:visited {
+    text-decoration: none;
+    color: #a3a3a3;
+    transition: all 0.2s ease-in-out 0s;
+}
+a:hover {
+    color: #fff;
+}
+header{
+    position: relative;
+    padding: 5px 5px 5px 20px;
+    margin-bottom:5px;
+    background-color: rgba(200,200,200,.1);
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+header .logo{
+    font-family: 'Cabin', sans-serif;
+    color: #ffffff;
+}
+header .logo .title{
+    text-shadow: 2px 2px 1px #000;
+    font-size: 22px;
+}
+header .logo span.time{
+    margin-left:5px;
+    font-size:16px;
+    color: rgba(255,255,255,.8);
+    vertical-align: middle;
+}
+header .logo span.announcement{
+    margin-left:2px;
+    font-size:14px !important;
+    color: rgba(255,255,255,.5);
+    vertical-align: middle;
+}
+.navigation{
+    background: url("../img/backgrounds/background-body.jpg");
+    margin: 4px;
+    min-height: 70%;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 5px;
+    font-size: 10pt;
+    color: grey;
+}
+.navigation ul.menu{
+    list-style: none;
+    font-size: 11px;
+}
+.navigation ul.menu:not(:first-child){
+    margin-top: 6px;
+}
+.navigation ul.menu li.menu-header{
+    font-size: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.2);
+    text-shadow: 2px 2px 1px #000;
+    font-family: 'Abel',sans-serif;
+}
+.navigation ul.menu li.menu-item{
+    padding: 2px 6px 2px 6px;
+    display: block;
+    font-family: 'Cabin', sans-serif;
+}
+.navigation ul.menu li.menu-item:hover a.menu-link i{
+    color: #a3a3a3;
+}
+.navigation ul.menu li.menu-item:hover, .navigation ul.menu li.menu-item:focus{
+    background-color: #333333;
+    padding: 2px 6px 2px 6px;
+}
+.navigation ul.menu li.menu-item:hover a{
+    color: #ff0000;
+}
+.navigation ul.menu li.menu-item a.menu-link i{
+    padding-right: 6px;
+    font-size: 10px;
+}
+.navigation .top{
+    text-align: center;
+}
+.navigation .top span.fal, .navigation .top span.fas{
+    font-size: 60px;
+    display: block;
+}
+.navigation .top .form-control{
+    border-radius: 0;
+    padding: 4px;
+    height: 24px;
+    background-color: #2d2d2d;
+    border:0;
+}
+.navigation ul.info-menu{
+    list-style: none;
+    font-size: 11px;
+    text-wrap: avoid;
+    padding: 5px;
+}
+.navigation ul.info-menu li.menu-header{
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,.2);
+    text-shadow: 2px 2px 1px #000;
+    font-family: 'Abel',sans-serif;
+}
+.navigation ul.info-menu li.menu-item .progress{
+    border: 0;
+    background-color: transparent;
+}
+.navigation ul.info-menu li.menu-item:not(:first-child){
+    margin:5px;
+}
+.game-body{
+    background: url("../img/backgrounds/background-body.jpg");
+    margin: 4px;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 5px;
+    font-size: 10pt;
+    color: grey;
+}
+.game-body ul.icon-menu{
+    list-style: none;
+    width: 100% !important;
+    text-align: center;
+}
+.game-body ul.icon-menu li.menu-item{
+    display: inline-block;
+    width: calc(85% / 10);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 5px;
+    font-size: 15px;
+    line-height: 14px;
+    margin: 3px;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgba(255,255,255,0.05);
+    color: #ffffff;
+}
+.game-body ul.icon-menu li.menu-item.in-active{
+    opacity: 0.3;
+    filter:alpha(opacity=30);
+}
+.game-body ul.icon-menu li.menu-item:hover{
+    background-color: #333333;
+}
+.game-body .game-header{
+    font-size: 19px;
+    color: #ffffff;
+    text-shadow: 2px 2px 1px #000;
+    letter-spacing: 0;
+    font-family: 'Abel',sans-serif;
+}
+.game-body .game-box{
+    padding: 5px;
+    background-color: rgba(19,19,19,.6);
+    margin: 4px 10px 4px 10px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 2px;
+}
+.game-body .game-box ul.statics-menu{
+    list-style: none;
+    position: relative;
+}
+.game-body .game-box ul.statics-menu li{
+    width: 100%;
+    font-size: 10px;
+    color: #ffffff;
+}
+.game-body .game-box ul.statics-menu li span.static-name{
+    width: 70%;
+    word-break: break-word;
+}
+.game-body .game-box ul.statics-menu li span.static-num{
+    width: 30%;
+    float: right;
+    word-break: break-word;
+}
+.game-body .box-game{
+    background-repeat: no-repeat;
+    background-position: left;
+    border: 1px solid rgba(255,255,255,.2);
+    background-color: rgba(19,19,19,.6);
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+.game-body .box-game .text{
+    margin-left: 44%;
+    font-size: 10px;
+    color: #ffffff;
+}
+.game-body .box-game .text .progress{
+    height: 15px;
+}
+.game-body .box-game .icons i{
+    font-size: 17px;
+    margin: 4px;
+    color: #4e555b;
+}
+.game-body .box-game.hover:hover{
+    opacity: 0.8;
+    filter:alpha(opacity=80);
+}
+.game-body .box-game.locked{
+    opacity: 0.4;
+    filter:alpha(opacity=40);
+}
+.game-body ul.theft{
+    list-style: none;
+}
+.game-body ul.theft li.theft-item{
+    border: 1px solid transparent;
+}
+.game-body ul.theft li.theft-item button.btn{
+    color: #ffffff;
+    font-size: 11px;
+    padding:0;
+    margin:0;
+    font-family: 'Cabin', sans-serif;
+}
+.game-body ul.theft li.theft-item:hover{
+    background: linear-gradient(to bottom, rgba(120, 20, 21, 0.76), rgba(83, 15, 16, 0.86));
+    border: 1px solid #333333;
+    border-radius: 5px;
+}
+ul.game-tabs{
+    margin: 4px;
+    list-style: none;
+    width: 100%;
+}
+ul.game-tabs li.tab-item{
+    display: inline-block;
+    width: calc(90%/ 6);
+    text-align:center;
+    background: url("../img/backgrounds/background-body.jpg");
+    margin: 4px;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 5px;
+    font-size: 12pt;
+    color: grey;
+    font-family: 'Homenaje', sans-serif
+}
+ul.game-tabs li.tab-item a.tab-link{
+    color: #ffffff;
+}
+ul.game-tabs li.tab-item.active{
+    background: #111111;
+}
+ul.game-tabs li.tab-item:hover{
+    background: #333333;
+}
+.page-img{
+    margin-right: auto;
+    margin-left: auto;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+}
+.icon-design{
+    font-size: 19px;
+    margin-right: 7px;
+    color: #ffffff;
+}
+.hover-tr{
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+.hover-tr:hover{
+    background: linear-gradient(to bottom, rgba(120, 20, 21, 0.76), rgba(83, 15, 16, 0.86));
+    border: 1px solid #333333;
+    border-radius: 5px;
+}
+.font-size{
+    font-size: 9px;
+}
+@media all and (max-width: 768px) {
+    header .menu-mobile{
+        position: absolute;
+        left: 3%;
+        top: 25%;
+    }
+    header .logo{
+        margin-left: calc(100% /4);
+    }
+    header .stats-mobile{
+        position: absolute;
+        right: 3%;
+        top: 25%;
+    }
+    .game-body ul.icon-menu li.menu-item{
+        width: calc(85% /5);
+    }
+    ul.game-tabs li.tab-item{
+        width: calc(90%/ 3);
+    }
+    .game-body .box-game .text{
+        margin-left: 0%;
+        text-shadow: 2px 2px 1px #000;
+    }
+    .game-body .box-game .text .progress{
+        height: 10px;
+    }
+    .game-body .box-game .icons i {
+        font-size: 15px;
+        padding-top: 8%;
+        margin: 2%;
+    }
+    .navigation{
+        background: url("../img/backgrounds/background-body.jpg");
+        border-right: 1px solid rgba(255,255,255,.2);
+        font-size: 10pt;
+        color: grey;
+        min-height: 100%;
+        margin:0;
+        border-radius: 0;
+        width: 0%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        overflow-x: hidden;
+        transition: 0.5s;
+    }
+    .navigation.stats{
+        border-right:0;
+        border-left: 1px solid rgba(255,255,255,.2);
+        left: auto;
+        right: 0;
+    }
+    .navigation .closebtn{
+        position: absolute;
+        top: 0.5%;
+        right: 5%;
+        font-size: 25px;
+        color: #ff0000;
+    }
+    .navigation.stats .closebtn{
+        right: auto;
+        left: 5%;
+    }
+}

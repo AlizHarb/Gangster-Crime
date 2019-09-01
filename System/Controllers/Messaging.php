@@ -21,76 +21,19 @@ class Messaging extends Controller
             "M_read" => 1
         ));
 
-        $count = 0;
-        $messages = array();
-        $messaging = $this->_db->get("mail", array(
-            array("M_toUser", "=", $user->data()->id),
-            array('M_saved', "<>", 1)
-        ), "M_date", "desc limit 200");
-        if($messaging->count()){
-            $count = $messaging->count();
-            $messaging = $messaging->results();
-            foreach($messaging as $message){
-                $userInfo = Model::get('User');
-                if($message->M_fromUser == 0){
-                    $userInfo->find(0);
-                    $userInfo->data()->profile = "System";
-                    $userInfo->data()->name = "System";
-                    $userInfo->data()->avatar = "public/assets/img/avatar_small.jpg";
-                }else{
-                    $userInfo->find($message->M_fromUser);
-                }
-
-                $messages[] = array(
-                    "from"      => $userInfo,
-                    "message"   => $message
-                );
-            }
-        }
-
         $this->view('messaging/main' ,array(
-            'messages'  => $messages,
-            'count'     => $count
+            'messages'  => $mail->userMail(),
+            'count'     => $mail->count()
         ));
     }
 
     public function saved()
     {
-        $user = Model::get('User');
-
-        $count = 0;
-        $messages = array();
-        $messaging = $this->_db->get("mail", array(
-            array("M_toUser", "=", $user->data()->id),
-            array('M_saved', "=", 1)
-        ), "M_date", "desc limit 200");
-        if($messaging->count()){
-            $count = $messaging->count();
-            $messaging = $messaging->results();
-            foreach($messaging as $message){
-                $userInfo = Model::get('User');
-                if($message->M_fromUser == 0){
-                    $userInfo->find(0);
-                    $userInfo->data()->profile = "System";
-                    $userInfo->data()->name = "System";
-                    $userInfo->data()->avatar = "public/assets/img/avatar_small.jpg";
-                }else{
-                    $userInfo->find($message->M_fromUser);
-                }
-
-                $messages[] = array(
-                    "from"      => $userInfo,
-                    "message"   => $message
-                );
-            }
-            if(Input::get('get')){
-                die('hi');
-            }
-        }
+        $mail = Model::get('Mail');
 
         $this->view('messaging/main' ,array(
-            'messages'  => $messages,
-            'count'     => $count
+            'messages'  => $mail->savedMail(),
+            'count'     => $mail->count()
         ));
     }
 
@@ -148,27 +91,27 @@ class Messaging extends Controller
                 }
             }
         }
-        Redirect::to('/messaging/newMessage');
+        Redirect::to('messaging/newMessage');
     }
 
-    public function action()
+    public function actions()
     {
+        $user = Model::get('User');
+        $mail = Model::get('Mail');
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $user = Model::get('User');
-                $mail = Model::get('Mail');
-                $message = $this->_db->get("mail", array(
-                    array('id', '=', Input::get('message')),
-                    array('M_toUser', '=', $user->data()->id),
-                ));
-                if($message->count()){
-                    $message = $message->first();
+                $message = $mail->getMail(
+                    Input::get('message'),
+                    $user->data()->id
+                );
+                if($message){
                     if(Input::get('delete')){
                         $mail->delete(array(
                             array('id', '=', Input::get('message'))
                         ));
                         Session::flash('success', "You have successfully deleted the message");
-                    }elseif(Input::get('save')){
+                    }
+                    if(Input::get('save')){
                         if($message->M_saved !== 1){
                             $mail->update("id = ".Input::get('message') ,array(
                                 "M_saved" => 1
@@ -177,7 +120,8 @@ class Messaging extends Controller
                             Session::flash('error', 'You have already saved this message.');
                         }
                         Session::flash('success', "You have successfully saved the message");
-                    }elseif(Input::get('forward')){
+                    }
+                    if(Input::get('forward')){
                         $this->newMessage($message);
                     }
                 }else{
@@ -185,6 +129,6 @@ class Messaging extends Controller
                 }
             }
         }
-        Redirect::to('/messaging');
+        Redirect::to('messaging');
     }
 }

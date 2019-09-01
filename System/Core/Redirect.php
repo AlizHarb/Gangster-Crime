@@ -15,7 +15,8 @@ class Redirect
                         break;
                 }
             }
-            header('Location: /crime'.$location);
+            $settings = Model::get('Settings');
+            header('Location: '.$settings::get('website_url').$location);
             exit();
         }
     }

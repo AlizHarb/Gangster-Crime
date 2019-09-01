@@ -17,7 +17,7 @@ class Prison extends Controller
         $user = Model::get('User');
 
         $prisoners = array();
-        $prison = $this->_db->get("gangstersTimer", array(
+        $prison = $this->_db->get("gangstersTimers", array(
             array('GT_name', '=', "prison"),
             array('GT_time', '>=', time())
         ));
@@ -26,8 +26,9 @@ class Prison extends Controller
             $userPrison->find($prison->id);
 
             if($userPrison->stats()->GS_location == $user->stats()->GS_location){
+
                 $prisoners[] = array(
-                    "time"      => $prison->GT_time * 1000,
+                    "time"      => $prison->GT_time,
                     "userInfo"  => $userPrison
                 );
             }
@@ -46,7 +47,7 @@ class Prison extends Controller
                 "userInfo"  => $userPrison
             );
         }
-        $this->view('prison', array(
+        $this->view('prison/main', array(
             "prisoners"        => $prisoners,
             "busters"          => $buster
         ));
@@ -56,45 +57,38 @@ class Prison extends Controller
     {
         if(Input::exists()){
             if(Token::check(Input::get('token'))){
-                $time = $this->_db->get("gangstersTimer", array(
+                $time = $this->_db->get("gangstersTimers", array(
                     array('id', '=', Input::get('prisoner')),
                     array('GT_time', '>=', time())
                 ));
                 $time = $time->first();
                 $user = Model::get('User');
-                $mail = Model::get('Mail');
                 $userInfo = Model::get('User');
                 $userInfo->find(Input::get('prisoner'));
                 if($time->GT_time >= time()){
-                    if($user->getTimer('prison') <= time()){
+                    if($user->timer('prison') <= time()){
                         if($userInfo->stats()->GS_prisonReward <= $userInfo->stats()->GS_cash){
                             if($userInfo->data()->id !== $user->data()->id){
                                 if($userInfo->stats()->GS_location == $user->stats()->GS_location){
                                     $chance = mt_rand(1, 3);
                                     if($chance == 1 || $chance == 3){
-                                        Session::flash('error', 'You were caught trying to bust '.$userInfo->data()->profile.' out of Prison and have been sent to Prison.');
+                                        Session::flash('error', 'You were caught trying to bust '.$userInfo->data()->user.' out of Prison and have been sent to Prison.');
                                         $user->set(array(
-                                            'GS_prisonCrime' => 'Failed bust '.$userInfo->data()->profile,
+                                            'GS_prisonReason' => 'Failed bust '.$userInfo->data()->user,
                                             'GS_prisonFailed' => $user->stats()->GS_prisonFailed + 1
                                         ));
-                                        $user->setTimer('prison', 2*60);
+                                        $user->timer('prison', 2*60);
                                     }else{
                                         $user->set(array(
-                                            'GS_prisonSuccess' => $user->stats()->GS_prisonSuccess + 1,
-                                            'GS_cash' => $user->stats()->GS_cash + $userInfo->stats()->GS_prisonReward,
-                                            "GS_exp"              => $user->stats()->GS_exp + 1
+                                            'GS_prisonSuccess'      => $user->stats()->GS_prisonSuccess + 1,
+                                            'GS_cash'               => $user->stats()->GS_cash + $userInfo->stats()->GS_prisonReward,
+                                            "GS_exp"                => $user->stats()->GS_exp + 1
                                         ));
                                         $userInfo->set(array(
                                             "GS_cash" => $userInfo->stats()->GS_cash - $userInfo->stats()->GS_prisonReward
                                         ));
-                                        $userInfo->setTimer('prison', 0);
-                                        Session::flash('success', 'You have successfully busted '.$userInfo->data()->profile.'.');
-                                        $mail->create(array(
-                                            "M_toUser"      => $userInfo->data()->id,
-                                            "M_fromUser"    => $user->data()->id,
-                                            "M_text"        => $userInfo->data()->profile." has busted you out of prison.",
-                                            "M_date"        => date('Y-m-d H:i:s')
-                                        ));
+                                        $userInfo->timer('prison', 0);
+                                        Session::flash('success', 'You have successfully busted '.$userInfo->data()->user.'.');
                                     }
                                 }else{
                                     Session::flash('error', 'You can not bust someone in another city.');
@@ -113,7 +107,7 @@ class Prison extends Controller
                 }
             }
         }
-        Redirect::to('/prison');
+        Redirect::to('prison');
     }
 
     public function bribe()
@@ -122,11 +116,11 @@ class Prison extends Controller
         if(Input::exists()){
             if(Token::check(Input::get('token'))) {
                 if($user->stats()->GS_bribe > 0){
-                    if($user->getTimer('prison') >= time()){
+                    if($user->timer('prison') >= time()){
                         $user->set(array(
                             'GS_bribe' => $user->stats()->GS_bribe - 1
                         ));
-                        $user->setTimer('prison', 0);
+                        $user->timer('prison', 0);
                         Session::flash('success', 'You are out of prison.');
                     }else{
                         Session::flash('error', 'You are not in the prison.');
@@ -136,7 +130,7 @@ class Prison extends Controller
                 }
             }
         }
-        Redirect::to('/prison');
+        Redirect::to('prison');
     }
 
     public function reward()
@@ -168,6 +162,6 @@ class Prison extends Controller
                 }
             }
         }
-        Redirect::to('/prison');
+        Redirect::to('prison');
     }
 }
