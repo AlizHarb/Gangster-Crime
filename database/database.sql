@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 13, 2019 at 10:09 PM
--- Server version: 5.7.26-0ubuntu0.18.04.1
--- PHP Version: 7.2.20-1+ubuntu18.04.1+deb.sury.org+1
+-- Generation Time: Sep 01, 2019 at 08:49 AM
+-- Server version: 5.7.27-0ubuntu0.18.04.1
+-- PHP Version: 7.2.21-1+ubuntu18.04.1+deb.sury.org+1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -87,35 +87,6 @@ INSERT INTO `cars` (`id`, `C_name`, `C_price`, `C_theftChance`, `C_img`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `crews`
---
-
-CREATE TABLE `crews` (
-  `id` int(11) NOT NULL,
-  `C_name` varchar(50) NOT NULL,
-  `C_boss` int(11) NOT NULL,
-  `C_underboss` int(11) NOT NULL DEFAULT '0',
-  `C_recruiting` enum('Yes','No') NOT NULL DEFAULT 'Yes',
-  `C_logo` varchar(255) NOT NULL DEFAULT 'public/assets/img/crew-logo.gif',
-  `C_img` varchar(255) NOT NULL DEFAULT 'public/assets/img/crew-avatar.gif',
-  `C_quote` text NOT NULL,
-  `C_text` text NOT NULL,
-  `C_bank` int(11) NOT NULL DEFAULT '0',
-  `C_bullets` int(11) NOT NULL DEFAULT '0',
-  `C_size` int(11) NOT NULL DEFAULT '10',
-  `C_joined` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `crews`
---
-
-INSERT INTO `crews` (`id`, `C_name`, `C_boss`, `C_underboss`, `C_recruiting`, `C_logo`, `C_img`, `C_quote`, `C_text`, `C_bank`, `C_bullets`, `C_size`, `C_joined`) VALUES
-(4, 'My crew', 6, 0, 'Yes', 'public/assets/img/crew-logo.gif', 'public/assets/img/crew-avatar.gif', 'No Crew Quote.', '', 983558, 2983558, 10, '2019-07-10 10:53:03');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `crimes`
 --
 
@@ -125,19 +96,20 @@ CREATE TABLE `crimes` (
   `C_time` int(11) NOT NULL,
   `C_minMoney` int(11) NOT NULL DEFAULT '5',
   `C_maxMoney` int(11) NOT NULL DEFAULT '10',
-  `C_exp` int(11) NOT NULL DEFAULT '1'
+  `C_exp` int(11) NOT NULL DEFAULT '1',
+  `C_items` varchar(20) NOT NULL DEFAULT '0-0-0-0-0-0-0-0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `crimes`
 --
 
-INSERT INTO `crimes` (`id`, `C_name`, `C_time`, `C_minMoney`, `C_maxMoney`, `C_exp`) VALUES
-(1, 'Debt Collection', 50, 5, 10, 1),
-(2, 'Pickpocket on a train', 60, 10, 15, 1),
-(3, 'Mug a tourist', 60, 15, 20, 1),
-(4, 'Steel from a street trader', 70, 25, 30, 2),
-(5, 'Break into a storage facility', 70, 25, 30, 2);
+INSERT INTO `crimes` (`id`, `C_name`, `C_time`, `C_minMoney`, `C_maxMoney`, `C_exp`, `C_items`) VALUES
+(1, 'Debt Collection', 50, 5, 10, 1, '1-3'),
+(2, 'Pickpocket on a train', 60, 10, 15, 1, '2-5'),
+(3, 'Mug a tourist', 60, 15, 20, 1, '4-1'),
+(4, 'Steel from a street trader', 70, 25, 30, 2, '1-3'),
+(5, 'Break into a storage facility', 70, 25, 30, 2, '1-7');
 
 -- --------------------------------------------------------
 
@@ -168,83 +140,70 @@ INSERT INTO `gangsters` (`id`, `G_name`, `G_password`, `G_email`, `G_avatar`, `G
 -- --------------------------------------------------------
 
 --
--- Table structure for table `gangstersSessions`
---
-
-CREATE TABLE `gangstersSessions` (
-  `id` int(11) NOT NULL,
-  `user` int(11) NOT NULL,
-  `hash` varchar(150) NOT NULL,
-  `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `gangstersSessions`
---
-
-INSERT INTO `gangstersSessions` (`id`, `user`, `hash`, `time`) VALUES
-(3, 6, '62333237373835353638393631346132653966303034373438313736386339316365623139353238306331636534333931356662353962383734363836363662', 1563048455);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `gangstersStats`
 --
 
 CREATE TABLE `gangstersStats` (
   `id` int(11) NOT NULL,
-  `GS_cash` int(11) NOT NULL DEFAULT '2500',
+  `GS_cash` int(11) NOT NULL DEFAULT '1500',
   `GS_bank` int(11) NOT NULL DEFAULT '0',
+  `GS_exp` int(11) NOT NULL DEFAULT '0',
+  `GS_health` int(11) NOT NULL DEFAULT '0',
+  `GS_rank` int(11) NOT NULL DEFAULT '1',
+  `GS_location` int(11) NOT NULL DEFAULT '1',
   `GS_bullets` int(11) NOT NULL DEFAULT '0',
   `GS_credits` int(11) NOT NULL DEFAULT '0',
-  `GS_exp` int(11) NOT NULL DEFAULT '0',
-  `GS_rank` int(11) NOT NULL DEFAULT '1',
-  `GS_health` int(11) NOT NULL DEFAULT '0',
-  `GS_location` int(11) NOT NULL DEFAULT '1',
-  `GS_autostolen` int(11) NOT NULL DEFAULT '0',
+  `GS_weapon` int(11) NOT NULL DEFAULT '0',
+  `GS_protection` int(11) NOT NULL DEFAULT '0',
   `GS_crew` int(11) NOT NULL DEFAULT '0',
-  `GS_crewLevel` int(11) NOT NULL DEFAULT '0',
-  `GS_prisonCrime` varchar(150) NOT NULL,
-  `GS_prisonReward` int(11) NOT NULL DEFAULT '0',
+  `GS_crimes` varchar(150) NOT NULL DEFAULT '0-0-0-0-0-0-0-0',
   `GS_prisonSuccess` int(11) NOT NULL DEFAULT '0',
   `GS_prisonFailed` int(11) NOT NULL DEFAULT '0',
-  `GS_hospitalHours` int(11) NOT NULL DEFAULT '0',
-  `GS_moneyBust` int(11) NOT NULL DEFAULT '0',
+  `GS_prisonReason` varchar(50) NOT NULL,
+  `GS_prisonReward` int(11) NOT NULL DEFAULT '0',
   `GS_bribe` int(11) NOT NULL DEFAULT '0',
-  `GS_crimes` varchar(100) NOT NULL DEFAULT '0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0',
-  `GS_items` varchar(50) NOT NULL DEFAULT '0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0',
-  `GS_smuggling` varchar(25) NOT NULL DEFAULT '0-0-0-0-0-0-0-0'
+  `GS_items` varchar(150) NOT NULL DEFAULT '0-0-0-0-0-0-0-0',
+  `GS_autostolen` int(11) NOT NULL DEFAULT '0',
+  `GS_theftExp` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `gangstersStats`
 --
 
-INSERT INTO `gangstersStats` (`id`, `GS_cash`, `GS_bank`, `GS_bullets`, `GS_credits`, `GS_exp`, `GS_rank`, `GS_health`, `GS_location`, `GS_autostolen`, `GS_crew`, `GS_crewLevel`, `GS_prisonCrime`, `GS_prisonReward`, `GS_prisonSuccess`, `GS_prisonFailed`, `GS_hospitalHours`, `GS_moneyBust`, `GS_bribe`, `GS_crimes`, `GS_items`, `GS_smuggling`) VALUES
-(6, 56974253, 0, 55000020, 342342, 10956, 11, 0, 1, 131, 4, 6, 'Auto Theft', 501, 21, 40, 0, 0, 87823, '100-100-15-0-2-0-0-0-0-0-0-0-0-0-0-0-0-0', '1-2-0-0-0-1-5-1-3-2-2-1-0-0-0-0-2-0', '0-0-0-0-0-0-0-0'),
-(7, 2635000, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 'Auto Theft', 1000, 1, 0, 0, 0, 0, '0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0', '0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0', '0-0-0-0-0-0-0-0');
+INSERT INTO `gangstersStats` (`id`, `GS_cash`, `GS_bank`, `GS_exp`, `GS_health`, `GS_rank`, `GS_location`, `GS_bullets`, `GS_credits`, `GS_weapon`, `GS_protection`, `GS_crew`, `GS_crimes`, `GS_prisonSuccess`, `GS_prisonFailed`, `GS_prisonReason`, `GS_prisonReward`, `GS_bribe`, `GS_items`, `GS_autostolen`, `GS_theftExp`) VALUES
+(6, 115323, 0, 683, 0, 2, 1, 0, 0, 0, 0, 0, '100-24-0-0-0-0-0-0', 11, 26, 'Attempted Crime', 500, 496, '2-0-5-0-0-0-0-0-1', 2, 8),
+(7, 176, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, '0-0-0-0-0-0-0-0', 0, 0, '', 0, 0, '0-0-0-0-0-0-0-0', 0, 0),
+(11, 1500, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, '0-0-0-0-0-0-0-0', 0, 0, '', 0, 0, '0-0-0-0-0-0-0-0', 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `gangstersTimer`
+-- Table structure for table `gangstersTimers`
 --
 
-CREATE TABLE `gangstersTimer` (
+CREATE TABLE `gangstersTimers` (
   `id` int(11) NOT NULL,
   `GT_name` varchar(20) NOT NULL,
   `GT_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `gangstersTimer`
+-- Dumping data for table `gangstersTimers`
 --
 
-INSERT INTO `gangstersTimer` (`id`, `GT_name`, `GT_time`) VALUES
-(6, 'travel', 1563000118),
-(6, 'autotheft', 1563045033),
-(6, 'bulletsfactory', 1562997964),
-(6, 'crime', 1563042717);
+INSERT INTO `gangstersTimers` (`id`, `GT_name`, `GT_time`) VALUES
+(6, 'bank', 0),
+(6, 'prison', 1567316605),
+(6, 'hospital', 0),
+(6, 'travel', 0),
+(6, 'autotheft', 0),
+(6, 'crime', 0),
+(6, 'crime-1', 1567316647),
+(6, 'crime-2', 1567316660),
+(6, 'crime-3', 0),
+(6, 'crime-4', 0),
+(6, 'crime-5', 0);
 
 -- --------------------------------------------------------
 
@@ -268,50 +227,7 @@ CREATE TABLE `garage` (
 --
 
 INSERT INTO `garage` (`id`, `GA_user`, `GA_car`, `GA_damage`, `GA_currentLocation`, `GA_nowLocation`, `GA_shipTo`, `GA_shipTime`) VALUES
-(6, 7, 1, 11, 1, 1, NULL, NULL),
-(7, 7, 5, 0, 1, 1, NULL, NULL),
-(8, 6, 4, 0, 2, 5, 5, 1562822258),
-(9, 6, 1, 92, 2, 2, 2, 0),
-(10, 6, 1, 92, 1, 2, 2, 0),
-(12, 6, 2, 13, 1, 2, 2, 0),
-(13, 6, 5, 55, 1, 2, 2, 0),
-(14, 6, 3, 66, 1, 2, 2, 0),
-(15, 6, 2, 99, 1, 1, NULL, NULL),
-(16, 6, 2, 78, 1, 1, NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `groups`
---
-
-CREATE TABLE `groups` (
-  `id` int(11) NOT NULL,
-  `name` varchar(20) NOT NULL,
-  `permissions` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `healthcare`
---
-
-CREATE TABLE `healthcare` (
-  `id` int(11) NOT NULL,
-  `H_user` int(11) NOT NULL,
-  `H_plan` int(11) NOT NULL DEFAULT '0',
-  `H_planTime` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `healthcare`
---
-
-INSERT INTO `healthcare` (`id`, `H_user`, `H_plan`, `H_planTime`) VALUES
-(2, 6, 1, 1563162073),
-(3, 7, 3, 1563080186),
-(4, 11, 3, 1563196278);
+(1, 6, 2, 33, 1, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -321,29 +237,30 @@ INSERT INTO `healthcare` (`id`, `H_user`, `H_plan`, `H_planTime`) VALUES
 
 CREATE TABLE `items` (
   `id` int(11) NOT NULL,
-  `I_name` varchar(50) NOT NULL
+  `I_name` varchar(50) NOT NULL,
+  `I_icon` varchar(50) NOT NULL DEFAULT 'fas fa-mask'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `items`
 --
 
-INSERT INTO `items` (`id`, `I_name`) VALUES
-(1, 'Laptop'),
-(2, 'Balaclava'),
-(6, 'Pistol'),
-(7, 'Pistol Magazine'),
-(8, 'secret Document'),
-(9, 'Cell Phone'),
-(10, 'Two Way Radio'),
-(11, 'Police Scanner'),
-(12, 'Baseball Bat'),
-(13, 'Bolt Cutter'),
-(14, 'Gas Mask'),
-(15, 'Tea Gas Canister'),
-(16, 'Vault Burner'),
-(17, 'Custom Weapon'),
-(18, 'Special Bullets');
+INSERT INTO `items` (`id`, `I_name`, `I_icon`) VALUES
+(1, 'Laptop', 'fas fa-laptop'),
+(2, 'Balaclava', 'fas fa-theater-masks'),
+(3, 'Mace', 'fas fa-mace'),
+(4, 'Hammer', 'fas fa-hammer'),
+(5, 'secret Document', 'fas fa-book'),
+(6, 'Cell Phone', 'fas fa-mobile'),
+(7, 'Two Way Radio', 'fas fa-phone-volume'),
+(8, 'Police Scanner', 'fas fa-scanner-touchscreen'),
+(9, 'Baseball Bat', 'fas fa-baseball'),
+(10, 'Bolt Cutter', 'fas fa-ellipsis-v'),
+(11, 'Gas Mask', 'fas fa-hockey-mask'),
+(12, 'Tea Gas Canister', 'fas fa-home'),
+(13, 'Vault Burner', 'fas fa-mask'),
+(14, 'Custom Weapon', 'fas fa-mask'),
+(15, 'Special Bullets', 'fas fa-ellipsis-h-alt');
 
 -- --------------------------------------------------------
 
@@ -392,33 +309,32 @@ CREATE TABLE `mail` (
 --
 
 INSERT INTO `mail` (`id`, `M_fromUser`, `M_toUser`, `M_text`, `M_read`, `M_saved`, `M_date`) VALUES
-(1, 0, 6, 'Your car had successfully been shipped!', 1, 0, '2019-07-11 07:17:57'),
-(2, 0, 6, 'Your car had successfully been shipped!', 1, 0, '2019-07-11 07:18:21'),
-(3, 0, 6, 'Your car had successfully been shipped!', 1, 0, '2019-07-11 07:18:30'),
-(4, 0, 7, '<a class=\'\' href=\'profile/Admin\'>Admin</a> sent you Lada 2105!', 1, 0, '2019-07-11 07:28:02'),
-(5, 0, 6, 'Your car had successfully been shipped!', 1, 0, '2019-07-11 14:35:04'),
-(6, 0, 6, 'Your car had successfully been shipped!', 1, 0, '2019-07-13 09:19:57'),
-(7, 0, 6, 'Your car had successfully been shipped to Odessa!', 1, 0, '2019-07-13 09:29:59');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `properties`
---
-
-CREATE TABLE `properties` (
-  `id` int(11) NOT NULL,
-  `P_location` int(11) NOT NULL DEFAULT '1',
-  `P_type` varchar(25) NOT NULL DEFAULT 'bulletfactory',
-  `P_time` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `properties`
---
-
-INSERT INTO `properties` (`id`, `P_location`, `P_type`, `P_time`) VALUES
-(1, 1, 'bulletfactory', 1563001293);
+(1, 0, 6, 'You have been promoted to <b>Delinquent</b>. Keep up the good work!', 1, 1, '2019-07-25 09:53:24'),
+(2, 6, 6, 'kjfaklsdjaklsdjla', 1, 0, '2019-07-25 10:04:40'),
+(3, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:02'),
+(4, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:04'),
+(5, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:05'),
+(6, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:06'),
+(7, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:06'),
+(8, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:07'),
+(9, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:07'),
+(10, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:08'),
+(11, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:08'),
+(12, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:09'),
+(13, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:10'),
+(14, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:10'),
+(15, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:11'),
+(16, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:12'),
+(17, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:12'),
+(18, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:13'),
+(19, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:14'),
+(20, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:14'),
+(21, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:15'),
+(22, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:16'),
+(23, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:17'),
+(24, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:17'),
+(25, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:24'),
+(26, 0, 6, 'Your savings plan with Centro Bank has recently expired. Under the terms of your account, Centro Bank has paid you 3% interest on the amount in your account at the time of your account expiry. <br><br>\n                                    In total, you have been credited with $650 by Centro Bank. <br><br>\n                                    Thank you for using Centro Bank.', 1, 0, '2019-07-26 07:36:01');
 
 -- --------------------------------------------------------
 
@@ -440,25 +356,25 @@ CREATE TABLE `ranks` (
 
 INSERT INTO `ranks` (`id`, `R_name`, `R_fromExp`, `R_toExp`, `R_health`) VALUES
 (1, 'Loner', 0, 500, 500),
-(2, 'Debt Collector', 500, 1500, 500),
+(2, 'Debt Collector', 501, 1500, 500),
 (3, 'Delinquent', 1500, 2500, 500),
 (4, 'Street Operator', 2500, 3500, 500),
 (5, 'Embezzler', 3500, 4500, 500),
 (6, 'Conman', 4500, 5500, 500),
 (7, 'Ruffian', 5500, 6500, 500),
 (8, 'Pillager', 6500, 7500, 500),
-(9, 'Soldier', 8500, 8500, 500),
-(10, 'Triggerman', 9500, 9500, 500),
-(11, 'Cell Boss', 10500, 10500, 500),
-(12, 'Enforcer', 11500, 11500, 500),
-(13, 'Eliminator', 12500, 12500, 500),
-(14, 'Pointman', 12500, 13500, 500),
-(15, 'Captain', 13500, 14500, 500),
-(16, 'Commandant', 14500, 15500, 500),
-(17, 'Warlord', 15500, 16500, 500),
-(18, 'Crime Boss', 16500, 17500, 500),
-(19, 'Made Man', 17500, 18500, 500),
-(20, 'Patriarch', 18500, 19500, 500);
+(9, 'Soldier', 8500, 9500, 500),
+(10, 'Triggerman', 9500, 10500, 500),
+(11, 'Cell Boss', 10500, 11500, 500),
+(12, 'Enforcer', 11500, 12500, 500),
+(13, 'Eliminator', 12500, 13500, 500),
+(14, 'Pointman', 13500, 14500, 500),
+(15, 'Captain', 14500, 15500, 500),
+(16, 'Commandant', 15500, 16500, 500),
+(17, 'Warlord', 16500, 17500, 500),
+(18, 'Crime Boss', 17500, 18500, 500),
+(19, 'Made Man', 18500, 19500, 500),
+(20, 'Patriarch', 19500, 20500, 500);
 
 -- --------------------------------------------------------
 
@@ -501,13 +417,8 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`id`, `T_from`, `T_to`, `T_amount`, `T_date`) VALUES
-(1, 6, 7, 4444, '2019-07-05 19:38:52'),
-(2, 6, 7, 1000000, '2019-07-08 07:47:53'),
-(3, 6, 7, 1000000, '2019-07-08 07:49:29'),
-(4, 6, 7, 1000000, '2019-07-08 07:50:12'),
-(5, 6, 7, 1000000, '2019-07-08 07:50:36'),
-(6, 6, 7, 500000, '2019-07-08 07:51:10'),
-(7, 7, 6, 3000000, '2019-07-08 07:52:12');
+(1, 6, 7, 500, '2019-07-26 07:18:27'),
+(2, 7, 6, 200, '2019-07-26 07:18:36');
 
 --
 -- Indexes for dumped tables
@@ -526,12 +437,6 @@ ALTER TABLE `cars`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `crews`
---
-ALTER TABLE `crews`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `crimes`
 --
 ALTER TABLE `crimes`
@@ -544,12 +449,6 @@ ALTER TABLE `gangsters`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `gangstersSessions`
---
-ALTER TABLE `gangstersSessions`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `gangstersStats`
 --
 ALTER TABLE `gangstersStats`
@@ -559,18 +458,6 @@ ALTER TABLE `gangstersStats`
 -- Indexes for table `garage`
 --
 ALTER TABLE `garage`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `groups`
---
-ALTER TABLE `groups`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `healthcare`
---
-ALTER TABLE `healthcare`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -589,12 +476,6 @@ ALTER TABLE `locations`
 -- Indexes for table `mail`
 --
 ALTER TABLE `mail`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `properties`
---
-ALTER TABLE `properties`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -630,11 +511,6 @@ ALTER TABLE `autotheft`
 ALTER TABLE `cars`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 --
--- AUTO_INCREMENT for table `crews`
---
-ALTER TABLE `crews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
 -- AUTO_INCREMENT for table `crimes`
 --
 ALTER TABLE `crimes`
@@ -645,35 +521,20 @@ ALTER TABLE `crimes`
 ALTER TABLE `gangsters`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
--- AUTO_INCREMENT for table `gangstersSessions`
---
-ALTER TABLE `gangstersSessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
 -- AUTO_INCREMENT for table `gangstersStats`
 --
 ALTER TABLE `gangstersStats`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `garage`
 --
 ALTER TABLE `garage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
---
--- AUTO_INCREMENT for table `groups`
---
-ALTER TABLE `groups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `healthcare`
---
-ALTER TABLE `healthcare`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `locations`
 --
@@ -683,12 +544,7 @@ ALTER TABLE `locations`
 -- AUTO_INCREMENT for table `mail`
 --
 ALTER TABLE `mail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT for table `properties`
---
-ALTER TABLE `properties`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
 -- AUTO_INCREMENT for table `ranks`
 --
@@ -703,7 +559,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
