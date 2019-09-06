@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 01, 2019 at 08:49 AM
+-- Generation Time: Sep 06, 2019 at 07:05 AM
 -- Server version: 5.7.27-0ubuntu0.18.04.1
--- PHP Version: 7.2.21-1+ubuntu18.04.1+deb.sury.org+1
+-- PHP Version: 7.2.22-1+ubuntu18.04.1+deb.sury.org+1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -32,19 +32,20 @@ CREATE TABLE `autotheft` (
   `AT_chance` int(11) NOT NULL,
   `AT_maxDamage` int(11) NOT NULL,
   `AT_worstCar` int(11) NOT NULL,
-  `AT_bestCar` int(11) NOT NULL
+  `AT_bestCar` int(11) NOT NULL,
+  `AT_items` varchar(20) NOT NULL DEFAULT '0-0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `autotheft`
 --
 
-INSERT INTO `autotheft` (`id`, `AT_name`, `AT_chance`, `AT_maxDamage`, `AT_worstCar`, `AT_bestCar`) VALUES
-(1, 'Steal from street corner', 50, 100, 1, 2),
-(2, 'Steel from 24hour car park', 35, 75, 3, 4),
-(3, 'Steal from private car park', 25, 60, 5, 7),
-(4, 'Steal from golf course', 18, 30, 8, 10),
-(5, 'Steal from car dearlership', 10, 10, 10, 12);
+INSERT INTO `autotheft` (`id`, `AT_name`, `AT_chance`, `AT_maxDamage`, `AT_worstCar`, `AT_bestCar`, `AT_items`) VALUES
+(1, 'Steal from street corner', 50, 100, 1, 2, '0-1'),
+(2, 'Steel from 24hour car park', 35, 75, 3, 4, '0-2'),
+(3, 'Steal from private car park', 25, 60, 5, 7, '16-17-5-1'),
+(4, 'Steal from golf course', 18, 30, 8, 10, '16-6-7'),
+(5, 'Steal from car dearlership', 10, 10, 10, 12, '6-7-8');
 
 -- --------------------------------------------------------
 
@@ -83,6 +84,28 @@ INSERT INTO `cars` (`id`, `C_name`, `C_price`, `C_theftChance`, `C_img`) VALUES
 (16, 'Audi RS8', 1000000, 0, 'themes/new/assets/images/pages/theftauto/cars/'),
 (17, 'Maserati Quattroporte', 1000000, 0, 'themes/new/assets/images/pages/theftauto/cars/'),
 (18, 'Audi R8', 1000000, 0, 'themes/new/assets/images/pages/theftauto/cars/');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `crews`
+--
+
+CREATE TABLE `crews` (
+  `id` int(11) NOT NULL,
+  `C_name` varchar(50) NOT NULL,
+  `C_boss` int(11) NOT NULL,
+  `C_underboss` int(11) NOT NULL,
+  `C_recruiting` enum('Open','Close') NOT NULL DEFAULT 'Open',
+  `C_size` enum('10','30') NOT NULL DEFAULT '10'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `crews`
+--
+
+INSERT INTO `crews` (`id`, `C_name`, `C_boss`, `C_underboss`, `C_recruiting`, `C_size`) VALUES
+(6, 'Admin', 6, 0, 'Open', '10');
 
 -- --------------------------------------------------------
 
@@ -172,7 +195,7 @@ CREATE TABLE `gangstersStats` (
 --
 
 INSERT INTO `gangstersStats` (`id`, `GS_cash`, `GS_bank`, `GS_exp`, `GS_health`, `GS_rank`, `GS_location`, `GS_bullets`, `GS_credits`, `GS_weapon`, `GS_protection`, `GS_crew`, `GS_crimes`, `GS_prisonSuccess`, `GS_prisonFailed`, `GS_prisonReason`, `GS_prisonReward`, `GS_bribe`, `GS_items`, `GS_autostolen`, `GS_theftExp`) VALUES
-(6, 115323, 0, 683, 0, 2, 1, 0, 0, 0, 0, 0, '100-24-0-0-0-0-0-0', 11, 26, 'Attempted Crime', 500, 496, '2-0-5-0-0-0-0-0-1', 2, 8),
+(6, 110422000, 0, 10600, 0, 11, 1, 0, 0, 0, 0, 6, '100-24-0-0-0-0-0-0', 11, 26, 'Auto theft', 500, 494, '5-0-6-0-0-0-0-0-1-1-1', 20, 68),
 (7, 176, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, '0-0-0-0-0-0-0-0', 0, 0, '', 0, 0, '0-0-0-0-0-0-0-0', 0, 0),
 (11, 1500, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, '0-0-0-0-0-0-0-0', 0, 0, '', 0, 0, '0-0-0-0-0-0-0-0', 0, 0);
 
@@ -193,14 +216,14 @@ CREATE TABLE `gangstersTimers` (
 --
 
 INSERT INTO `gangstersTimers` (`id`, `GT_name`, `GT_time`) VALUES
-(6, 'bank', 0),
-(6, 'prison', 1567316605),
+(6, 'bank', 1567661144),
+(6, 'prison', 1567663564),
 (6, 'hospital', 0),
 (6, 'travel', 0),
-(6, 'autotheft', 0),
+(6, 'autotheft', 1567663670),
 (6, 'crime', 0),
-(6, 'crime-1', 1567316647),
-(6, 'crime-2', 1567316660),
+(6, 'crime-1', 1567424140),
+(6, 'crime-2', 1567424153),
 (6, 'crime-3', 0),
 (6, 'crime-4', 0),
 (6, 'crime-5', 0);
@@ -227,7 +250,24 @@ CREATE TABLE `garage` (
 --
 
 INSERT INTO `garage` (`id`, `GA_user`, `GA_car`, `GA_damage`, `GA_currentLocation`, `GA_nowLocation`, `GA_shipTo`, `GA_shipTime`) VALUES
-(1, 6, 2, 33, 1, 1, NULL, NULL);
+(1, 6, 2, 0, 1, 1, 2, 1567399994),
+(3, 6, 7, 59, 1, 1, 3, 1567400178),
+(4, 6, 5, 45, 1, 1, NULL, NULL),
+(5, 6, 4, 45, 1, 1, NULL, NULL),
+(6, 6, 4, 32, 1, 1, NULL, NULL),
+(7, 6, 1, 48, 1, 1, NULL, NULL),
+(8, 6, 1, 100, 1, 1, NULL, NULL),
+(9, 6, 2, 24, 1, 1, NULL, NULL),
+(10, 6, 2, 86, 1, 1, NULL, NULL),
+(11, 6, 1, 91, 1, 1, NULL, NULL),
+(12, 6, 1, 72, 1, 1, NULL, NULL),
+(13, 6, 2, 45, 1, 1, NULL, NULL),
+(14, 6, 2, 58, 1, 1, NULL, NULL),
+(15, 6, 1, 99, 1, 1, NULL, NULL),
+(16, 6, 10, 5, 1, 1, NULL, NULL),
+(17, 6, 10, 5, 1, 1, NULL, NULL),
+(18, 6, 10, 3, 1, 1, NULL, NULL),
+(19, 6, 6, 54, 1, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -260,7 +300,9 @@ INSERT INTO `items` (`id`, `I_name`, `I_icon`) VALUES
 (12, 'Tea Gas Canister', 'fas fa-home'),
 (13, 'Vault Burner', 'fas fa-mask'),
 (14, 'Custom Weapon', 'fas fa-mask'),
-(15, 'Special Bullets', 'fas fa-ellipsis-h-alt');
+(15, 'Special Bullets', 'fas fa-ellipsis-h-alt'),
+(16, 'Pistol', 'fas fa-sword'),
+(17, 'Pistol Magazine', 'fas fa-sword');
 
 -- --------------------------------------------------------
 
@@ -334,7 +376,17 @@ INSERT INTO `mail` (`id`, `M_fromUser`, `M_toUser`, `M_text`, `M_read`, `M_saved
 (23, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:17'),
 (24, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:17'),
 (25, 0, 6, 'messageod work!', 1, 0, '2019-07-25 10:27:24'),
-(26, 0, 6, 'Your savings plan with Centro Bank has recently expired. Under the terms of your account, Centro Bank has paid you 3% interest on the amount in your account at the time of your account expiry. <br><br>\n                                    In total, you have been credited with $650 by Centro Bank. <br><br>\n                                    Thank you for using Centro Bank.', 1, 0, '2019-07-26 07:36:01');
+(26, 0, 6, 'Your savings plan with Centro Bank has recently expired. Under the terms of your account, Centro Bank has paid you 3% interest on the amount in your account at the time of your account expiry. <br><br>\n                                    In total, you have been credited with $650 by Centro Bank. <br><br>\n                                    Thank you for using Centro Bank.', 1, 0, '2019-07-26 07:36:01'),
+(27, 0, 6, 'Your savings plan with Centro Bank has recently expired. Under the terms of your account, Centro Bank has paid you 3% interest on the amount in your account at the time of your account expiry. <br><br>\n                                    In total, you have been credited with $130,000 by Centro Bank. <br><br>\n                                    Thank you for using Centro Bank.', 1, 0, '2019-09-05 08:25:44'),
+(28, 0, 6, 'You have been promoted to <b>Street Operator</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(29, 0, 6, 'You have been promoted to <b>Embezzler</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(30, 0, 6, 'You have been promoted to <b>Conman</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(31, 0, 6, 'You have been promoted to <b>Ruffian</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(32, 0, 6, 'You have been promoted to <b>Pillager</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(33, 0, 6, 'You have been promoted to <b>Soldier</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(34, 0, 6, 'You have been promoted to <b>Triggerman</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(35, 0, 6, 'You have been promoted to <b>Cell Boss</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:47'),
+(36, 0, 6, 'You have been promoted to <b>Enforcer</b>. Keep up the good work!', 1, 0, '2019-09-05 08:36:48');
 
 -- --------------------------------------------------------
 
@@ -395,7 +447,7 @@ CREATE TABLE `settings` (
 INSERT INTO `settings` (`id`, `setting_name`, `setting_value`) VALUES
 (1, 'website_name', 'Gangsters Crime'),
 (2, 'website_url', 'http://localhost/crime/'),
-(3, 'website_email', 'admin@gangsterscrime.com'),
+(3, 'website_email', 'admin@localhost.com'),
 (4, 'website_theme', 'default');
 
 -- --------------------------------------------------------
@@ -434,6 +486,12 @@ ALTER TABLE `autotheft`
 -- Indexes for table `cars`
 --
 ALTER TABLE `cars`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `crews`
+--
+ALTER TABLE `crews`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -511,6 +569,11 @@ ALTER TABLE `autotheft`
 ALTER TABLE `cars`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 --
+-- AUTO_INCREMENT for table `crews`
+--
+ALTER TABLE `crews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
 -- AUTO_INCREMENT for table `crimes`
 --
 ALTER TABLE `crimes`
@@ -529,12 +592,12 @@ ALTER TABLE `gangstersStats`
 -- AUTO_INCREMENT for table `garage`
 --
 ALTER TABLE `garage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 --
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 --
 -- AUTO_INCREMENT for table `locations`
 --
@@ -544,7 +607,7 @@ ALTER TABLE `locations`
 -- AUTO_INCREMENT for table `mail`
 --
 ALTER TABLE `mail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 --
 -- AUTO_INCREMENT for table `ranks`
 --

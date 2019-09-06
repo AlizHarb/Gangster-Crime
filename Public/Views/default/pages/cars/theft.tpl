@@ -82,15 +82,15 @@
                     <tbody>
                     {% for car in garage %}
                     <tr class="hover-tr">
-                        <td><input type="checkbox" name="cars" id="cars" value="{{ car.id }}"></td>
+                        <td><input type="checkbox" name="cars" id="cars" value="{{ car.garage_id }}"></td>
                         <td>{{ car.name }}</td>
                         <td>%{{ car.damage }}</td>
                         <td>${{ car.price | number_format }}</td>
-                        <td>
+                        <td data-timer-type="name" data-timer="{{ car.time }}">
                             {% if car.time <= time %}
                                 {{ car.now }}
                             {% else %}
-                               {{ car.ship }} - <span id="shipTime-{{ car.id }}"></span>
+                               {{ car.ship }} - <span class="timer"></span>
                             {% endif %}
                         </td>
                         <td class="d-none d-md-inline-block">{{ car.now }}</td>
@@ -124,7 +124,7 @@
                         <div class="col-10">
                             <select class="form-control custom-select-sm" style="height: 28px;" name="location">
                                 {% for location in locations %}
-                                    <option value="{{ location.id }}">{{ location.L_name }} - ${{ (location.L_cost / 7) | number_format }}</option>
+                                    <option value="{{ location.id }}">{{ location.name }} - ${{ (location.cost / 7) | number_format }}</option>
                                 {% endfor %}
                             </select>
                             <div class="text-right">

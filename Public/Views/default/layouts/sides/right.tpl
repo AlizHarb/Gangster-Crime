@@ -43,6 +43,6 @@
     </ul>
     <ul class="info-menu">
         <li class="menu-header">CREW</li>
-        <li class="menu-item">{{ user.data().crew }}</li>
+        <li class="menu-item">{{ user.data().crewProfile | raw }}</li>
     </ul>
 </div>

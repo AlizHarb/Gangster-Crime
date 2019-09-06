@@ -31,10 +31,24 @@ class Theft
         }
     }
 
+    public function edit($where, $fields = array())
+    {
+        if (!$this->_db->update('garage',$where, $fields)) {
+            throw new Exception("There was a problem updating the garage");
+        }
+    }
+
     public function delete($fields = array())
     {
         if (!$this->_db->delete('autotheft', $fields)) {
             throw new Exception("There was a problem deleting your auto theft");
+        }
+    }
+
+    public function remove($fields = array())
+    {
+        if (!$this->_db->delete('garage', $fields)) {
+            throw new Exception("There was a problem deleting from garage");
         }
     }
 
@@ -52,12 +66,26 @@ class Theft
         return false;
     }
 
-    public function car($theft)
+    public function car($car)
     {
-        if ($theft) {
-            $fields = (is_numeric($theft)) ? 'id' : 'C_name';
+        if ($car) {
+            $fields = (is_numeric($car)) ? 'id' : 'C_name';
             $data 	= $this->_db->get('cars', array(
-                array($fields, '=', $theft)
+                array($fields, '=', $car)
+            ));
+            if ($data->count()) {
+                return $data->first();
+            }
+        }
+        return false;
+    }
+
+    public function garage($car, $user)
+    {
+        if ($car && $user) {
+            $data = $this->_db->get('garage', array(
+                array('id', '=', $car),
+                array('GA_user', '=', $user)
             ));
             if ($data->count()) {
                 return $data->first();
@@ -88,6 +116,27 @@ class Theft
         return false;
     }
 
+    public function allCars()
+    {
+        $all = array();
+        $data = $this->_db->get("cars", array(
+            array('id', '<>', 0)
+        ));
+        if($data->count()){
+            foreach($data->results() as $row){
+                $all[] = array(
+                    "id"       => $row->id,
+                    "name"     => $row->C_name,
+                    "price"    => $row->C_price,
+                    "chance"   => $row->C_theftChance,
+                    "img"      => $row->C_img
+                );
+            }
+            return $all;
+        }
+        return false;
+    }
+
     public function cars($where)
     {
         $all = array();
@@ -110,7 +159,6 @@ class Theft
     public function userCars()
     {
         $user       = Model::get('User');
-        $location   = Model::get('Location');
 
         $garage = array();
         $data = $this->_db->get('garage', array(
@@ -136,6 +184,7 @@ class Theft
 
                 $garage[] = array(
                     "id"        => $car->id,
+                    "garage_id" => $cars->id,
                     "name"      => $car->C_name,
                     "damage"    => $cars->GA_damage,
                     "price"     => $value,

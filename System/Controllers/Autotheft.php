@@ -14,12 +14,16 @@ class Autotheft extends Controller
 
     public function index()
     {
+        $user       = Model::get('User');
         $theft      = Model::get('Theft');
+        $location   = Model::get('Location');
+        $locations = $location->all(array('id', '<>', $user->location()->id));
 
         $this->view('cars/theft', array(
             "thefts"    => $theft->all(),
             "garage"    => $theft->userCars(),
-            "skill"     => $theft->skill()
+            "skill"     => $theft->skill(),
+            "locations" => $locations
         ));
     }
 
@@ -29,6 +33,8 @@ class Autotheft extends Controller
             if(Token::check(Input::get('token'))){
                 $user = Model::get('User');
                 $theft = Model::get('Theft');
+                $item = Model::get('Item');
+
                 if($theft->find(Input::get('theft'))){
                     $theftauto = $theft->find(Input::get('theft'));
                     if($user->timer('autotheft') <= time()){
@@ -63,9 +69,9 @@ class Autotheft extends Controller
 
                         }
 
-                        //$user->timer('autotheft', 3*60);
+                        $user->timer('autotheft', 3*60);
                         if ($chance > $userChance && $jailChance == 1){
-                            //$user->timer('prison', 2*60);
+                            $user->timer('prison', 2*60);
                             $user->set(array(
                                 "GS_prisonReason" => "Auto theft"
                             ));
@@ -88,6 +94,20 @@ class Autotheft extends Controller
                                 "GS_exp"    => $user->stats()->GS_exp + 1,
                                 "GS_autostolen" => $user->stats()->GS_autostolen + 1
                             ));
+                            $items = explode('-', $theftauto->AT_items);
+                            $randomItem = $items[array_rand($items)];
+                            $itemChance = ($randomItem == 1 ? 10 : $randomItem*3);
+                            $chanceItem = mt_rand($randomItem, $itemChance);
+                            if($randomItem == $chanceItem && $randomItem > 0){
+                                $item->find($randomItem);
+                                $userItems = explode('-', $user->stats()->GS_items);
+                                $userItems[($item->data()->id-1)] = $userItems[($item->data()->id-1)] + 1;
+                                $newItem = implode('-', $userItems);
+                                $user->set(array(
+                                    "GS_items" => $newItem
+                                ));
+                                Session::flash("info", 'You have found '.$item->data()->I_name.' while attempting the crime. You have '.number_format($userItems[($item->data()->id-1)]).' '.$item->data()->I_name);
+                            }
                             $add = 2;
                         }
                         $user->set(array(
@@ -111,50 +131,49 @@ class Autotheft extends Controller
                 $user       = Model::get('User');
                 $location   = Model::get('Location');
                 $mail       = Model::get('Mail');
-                $car        = Model::get('Car');
-                $garage = $this->_db->get('garage', array(
-                    array('id', '=', Input::get('cars')),
-                    array('GA_user', '=', $user->data()->id)
-                ));
-                if($garage->count()){
-                    $garage = $garage->first();
+                $car        = Model::get('Theft');
+
+                $garage = $car->garage(Input::get('cars') ,$user->data()->id);
+
+                if($garage){
                     if($garage->GA_nowLocation == $user->stats()->GS_location && $garage->GA_shipTime <= time()){
                         if(Input::get('sell')){
                             $multi = (100 - $garage->GA_damage) / 100;
-                            $value = round(($car->getCar($garage->GA_car)->C_price * $multi));
+                            $value = round(($car->car($garage->GA_car)->C_price * $multi));
                             $user->set(array(
                                 "GS_cash"   => $user->stats()->GS_cash + $value
                             ));
                             $car->remove(array(
                                 array('id', '=', Input::get('cars'))
                             ));
-                            Session::flash("success", 'You sold '.$car->getCar($garage->GA_car)->C_name.', making $'.number_format($value).'.');
+                            Session::flash("success", 'You sold '.$car->car($garage->GA_car)->C_name.', making $'.number_format($value).'.');
                         }elseif(Input::get('repair')){
                             if($garage->GA_damage > 0){
                                 $multi = (100 + $garage->GA_damage) / 100;
-                                $value = round(($car->getCar($garage->GA_car)->C_price * $multi));
+                                $value = round(($car->car($garage->GA_car)->C_price * $multi));
                                 $user->set(array(
                                     "GS_cash"   => $user->stats()->GS_cash - $value
                                 ));
                                 $car->edit("id = ".Input::get('cars'), array(
                                     "GA_damage" => 0
                                 ));
-                                Session::flash("success", 'You repaired '.$car->getCar($garage->GA_car)->C_name.' for $'.number_format($value).'.');
+                                Session::flash("success", 'You repaired '.$car->car($garage->GA_car)->C_name.' for $'.number_format($value).'.');
                             }else{
                                 Session::flash('error', 'This car is not damaged.');
                             }
                         }elseif(Input::get('ship')){
-                            if($location->getLocation(Input::get('location'))){
+                            if($location->find(Input::get('location'))){
+                                $location->find(Input::get('location'));
                                 if($garage->GA_shipTime <= time()){
-                                    if($garage->GA_nowLocation !== $location->getLocation(Input::get('location'))->id){
+                                    if($garage->GA_nowLocation !== $location->data()->id){
                                         $car->edit("id = ".Input::get('cars'), array(
-                                            "GA_shipTo"     => $location->getLocation(Input::get('location'))->id,
+                                            "GA_shipTo"     => $location->data()->id,
                                             "GA_shipTime"   => (time()+1*60*60)
                                         ));
                                         $user->set(array(
-                                            "GS_cash"   => $user->stats()->GS_cash - ($location->getLocation(Input::get('location'))->L_cost / 7)
+                                            "GS_cash"   => $user->stats()->GS_cash - ($location->data()->L_cost / 7)
                                         ));
-                                        Session::flash("success", 'You exported '.$car->getCar($garage->GA_car)->C_name.' at a cost of $'.number_format(($location->getLocation(Input::get('location'))->L_cost / 7)).'.');
+                                        Session::flash("success", 'You exported '.$car->car($garage->GA_car)->C_name.' at a cost of $'.number_format(($location->data()->L_cost / 7)).'.');
                                     }else{
                                         Session::flash('error', 'You ca not ship the car to the same city.');
                                     }
@@ -190,10 +209,10 @@ class Autotheft extends Controller
                         Session::flash("error", "You have to be at same location.");
                     }
                 }else{
-                    Session::flash("error", "You do not own this car.");
+                    Session::flash("error", "You do not own this car.".$garage->id);
                 }
             }
         }
-        Redirect::to('/autotheft');
+        Redirect::to('autotheft');
     }
 }

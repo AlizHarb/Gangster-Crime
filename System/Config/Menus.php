@@ -9,7 +9,7 @@ $menus = array(
         ),
         1  => array(
             "name"  => "Crew",
-            "url"   => "crew",
+            "url"   => "crews",
             "icon"  => "fal fa-users"
         ),
         2  => array(
@@ -56,7 +56,7 @@ $menus = array(
         ),
         3   => array(
             "name"  => "Gun store",
-            "url"   => "",
+            "url"   => "gunstore",
             "icon"  => "fal fa-sword"
         ),
         4   => array(

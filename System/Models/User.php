@@ -45,6 +45,8 @@ class User
 
     public function find($user = null)
     {
+        $settings = Model::get('Settings');
+
         if ($user) {
             $fields = (is_numeric($user)) ? 'id' : 'G_name';
             $data 	= $this->_db->get('gangsters', array(
@@ -61,7 +63,7 @@ class User
                 $maxHealth = $this->rank()->R_health;
 
                 $this->data()->name = $this->data()->G_name;
-                $this->data()->user = '<a>'.$this->data()->G_name.'</a>';
+                $this->data()->user = '<a href="'.$settings::get('website_url').'profile/'.$this->data()->id.'">'.$this->data()->G_name.'</a>';
                 $this->data()->rank = $this->rank()->R_name;
                 $this->data()->exp = round($expIntoNextRank / $expNeededForNextRank * 100, 2);
                 $this->data()->health = ($maxHealth - $this->stats()->GS_health) / $maxHealth * 100;
@@ -69,7 +71,12 @@ class User
                 $this->data()->bullets = $this->stats()->GS_bullets;
                 $this->data()->credits = $this->stats()->GS_credits;
                 $this->data()->location = $this->location()->L_name;
-                $this->data()->crew = "Crewless";
+                if($this->stats()->GS_crew == 0){
+                    $this->data()->crew = "Crewless";
+                }else{
+                    $this->data()->crew = $this->crew()->C_name;
+                    $this->data()->crewProfile = '<a href="'.$settings::get('website_url').'crews/profile/'.$this->crew()->id.'">'.$this->crew()->C_name.'</a>';
+                }
 
                 if ($this->data()->health < 0) $this->data()->health = 0;
                 return true;
@@ -111,6 +118,16 @@ class User
             ));
             return self::location();
         }
+    }
+
+    public function crew()
+    {
+        $crew = Model::get('Crew');
+        if($crew->find($this->stats()->GS_crew)){
+            $crew->find($this->stats()->GS_crew);
+            return $crew->data();
+        }
+        return false;
     }
 
     public function rank()

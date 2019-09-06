@@ -28,7 +28,7 @@ class Location
     public function delete($fields = array())
     {
         if (!$this->_db->delete('locations', $fields)) {
-            throw new Exception("There was a problem deleting your account");
+            throw new Exception("There was a problem deleting the location");
         }
     }
 

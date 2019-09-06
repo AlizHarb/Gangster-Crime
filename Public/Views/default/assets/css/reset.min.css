@@ -122,3 +122,8 @@ hr{
     margin-top: 5px;
     border-color: rgba(255,255,255,.2);
 }
+ul.list-unstyled li.list-header{
+    font-size: 20px;
+    text-shadow: 2px 2px 1px #000;
+    font-family: 'Abel',sans-serif;
+}
